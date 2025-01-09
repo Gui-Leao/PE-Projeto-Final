@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "bignumber.h"
 
+
 Node* create_node(int digit) {
     Node* new_node = (Node*)malloc(sizeof(Node));
 
@@ -43,4 +44,40 @@ BigNumber* create_big_number(char *str_number) {
     }
 
     return big_number;
+}
+
+BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
+    BigNumber* result = create_big_number("");
+
+    Node* node_x = x->last_digit;
+    Node* node_y = y->last_digit;
+
+    int carry_digit = 0;
+
+    while (node_x != NULL || node_y != NULL || carry_digit > 0) {
+        int digit_x, digit_y, sum, result_digit;
+
+        digit_x = (node_x != NULL) ? node_x->digit : 0;
+        digit_y = (node_y != NULL) ? node_y->digit : 0;
+
+        sum = digit_x + digit_y + carry_digit;
+
+        carry_digit = sum / 10;
+        result_digit = sum % 10;
+
+        Node* new_node = (Node*)malloc(sizeof(Node));
+        new_node->digit = result_digit;
+        new_node->next_digit = result->first_digit;
+        new_node->prev_digit = NULL;
+
+        if (result->first_digit == NULL) result->last_digit = new_node;
+        if (result->first_digit != NULL) result->first_digit->prev_digit = new_node;
+
+        result->first_digit = new_node;
+        
+        if (node_x != NULL) node_x = node_x->prev_digit;
+        if (node_y != NULL) node_y = node_y->prev_digit;
+    }
+
+    return result;
 }

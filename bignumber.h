@@ -5,13 +5,13 @@ typedef struct Node {
     char digit;
     struct Node *next_digit;
     struct Node *prev_digit;
-};
+} Node;
 
 typedef struct BigNumber {
     int is_positive;
     Node *first_digit;
     Node *last_digit;
-};
+} BigNumber;
 
 BigNumber* create_big_number(char *str_number);
 BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y);
