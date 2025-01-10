@@ -46,6 +46,16 @@ BigNumber* create_big_number(char *str_number) {
     return big_number;
 }
 
+void print_big_number(BigNumber *big_number) {
+    if ((big_number->is_positive = 0)) printf("-");
+
+    Node* current_node = big_number->first_digit;
+    while (current_node != NULL) {
+        printf("%d", current_node->digit);
+        current_node = current_node->next_digit;
+    }
+}
+
 BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
     BigNumber* result = create_big_number("");
 
