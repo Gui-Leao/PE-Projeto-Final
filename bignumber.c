@@ -50,10 +50,23 @@ void print_big_number(BigNumber *big_number) {
     if ((big_number->is_positive = 0)) printf("-");
 
     Node* current_node = big_number->first_digit;
+
     while (current_node != NULL) {
         printf("%d", current_node->digit);
         current_node = current_node->next_digit;
     }
+}
+
+void free_big_number(BigNumber *big_number) {
+    Node* current_node = big_number->first_digit;  
+ 
+    while (current_node != NULL) {
+        Node* next_node = current_node->next_digit;
+        free(current_node);
+        current_node = next_node;
+    }
+
+    free(big_number);
 }
 
 BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
