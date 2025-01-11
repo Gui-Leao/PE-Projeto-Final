@@ -3,6 +3,16 @@
 #include "bignumber.h"
 
 
+/* 
+* @brief Cria um Nó.
+*
+* @param digit Dígito do Nó.
+* @return O Nó criado.
+*
+* @details A função inicializa o Nó apenas com o dígito, sem nenhuma ligação com algum Nó
+*          posterior ou anterior.
+*/
+
 Node* create_node(int digit) {
     Node* new_node = (Node*)malloc(sizeof(Node));
 
@@ -12,6 +22,18 @@ Node* create_node(int digit) {
 
     return new_node;
 };
+
+
+/* 
+* @brief Cria um Big Number.
+*
+* @param str_number String do número.
+* @return O Big Number criado.
+*
+* @details A função adiciona cada Nó a medida que lê cada dígito da string, ou seja, a cada
+*          iteração, um novo Nó é adicionado ao final do Big Number. Cada dígito lido da
+*          string é convertido em inteiro, antes de ser usado para a criação de um Nó.
+*/
 
 BigNumber* create_big_number(char *str_number) {
     BigNumber* big_number = (BigNumber*)malloc(sizeof(BigNumber));
@@ -46,6 +68,13 @@ BigNumber* create_big_number(char *str_number) {
     return big_number;
 }
 
+
+/* 
+* @brief Realiza o print de um Big Number.
+*
+* @param big_number Big Number a ser printado.
+*/
+
 void print_big_number(BigNumber *big_number) {
     if ((big_number->is_positive = 0)) printf("-");
 
@@ -56,6 +85,13 @@ void print_big_number(BigNumber *big_number) {
         current_node = current_node->next_digit;
     }
 }
+
+
+/* 
+* @brief Libera a memória alocada pelo Big Number.
+*
+* @param big_number Big Number a ser liberado da memória.
+*/
 
 void free_big_number(BigNumber *big_number) {
     Node* current_node = big_number->first_digit;  
