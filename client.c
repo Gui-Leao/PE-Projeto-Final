@@ -17,6 +17,10 @@ int main() {
     BigNumber* y = create_big_number("10");
     BigNumber* sum = sum_big_numbers(x, y);
 
+    // Teste de comparação:
+    int comparison_big_numbers = return_largest_big_number(x, y);
+    printf("A comparação entre os Big Numbers retornou: %d\n", comparison_big_numbers);
+
     print_big_number(sum);
 
     free_big_number(x);

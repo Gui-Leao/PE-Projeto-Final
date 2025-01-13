@@ -79,7 +79,7 @@ void print_big_number(BigNumber *big_number) {
     if ((big_number->is_positive = 0)) printf("-");
 
     Node* current_node = big_number->first_digit;
-
+ 
     while (current_node != NULL) {
         printf("%d", current_node->digit);
         current_node = current_node->next_digit;
@@ -104,6 +104,19 @@ void free_big_number(BigNumber *big_number) {
 
     free(big_number);
 }
+
+
+/* 
+* @brief Realiza a soma entre dois Big Numbers.
+*
+* @param x Big Number a ser somado.
+* @param y Big Number a ser somado.
+*
+* @details A função inicializa a soma a partir do último Nó dos Big Numbers, e só finaliza
+*          quando não há mais nenhum Nó, tanto do Big Number x, ou do Big Number y, além de
+*          não precisar somar o dígito de transporte (quando a soma feita entre dois
+*          dígitos ultrapassa 10).
+*/
 
 BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
     BigNumber* result = create_big_number("");
@@ -139,4 +152,96 @@ BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
     }
 
     return result;
+}
+
+
+/* 
+* @brief Verifica os tamanhos dos Big Numbers.
+*
+* @param x Big Number a ser comparado.
+* @param y Big Number a ser comparado.
+*
+* @details Função auxiliar para verificar, dígito a dígito (Nó) de cada Big Number 
+*          e retornar qual possui o maior tamanho, logo, o maior valor. 
+*
+* @return 1, para x > y.
+* @return -1, para x < y.
+* @return 0, para x e y com mesmo tamanho.
+*/
+
+int compare_big_numbers_length(BigNumber *x, BigNumber *y) {
+    Node *node_x = x->first_digit;
+    Node *node_y = y->first_digit;
+
+    int len_x = 0, len_y = 0;
+
+    while (node_x) {
+        len_x++;
+        node_x = node_x->next_digit;
+    }
+
+    while (node_y) {
+        len_y++;
+        node_y = node_y->next_digit;
+    }
+
+    if (len_x > len_y) return 1;
+    if (len_x < len_y) return -1;
+
+    return 0;
+}
+/* 
+* @brief Função auxiliar para verificar, daqueles Big Numbers que possuem o mesmo tamanho, 
+*        qual é o maior.
+*
+* @param x Big Number a ser comparado.
+* @param y Big Number a ser comparado.
+*
+* @details A função parte do primeiro Nó (dígito) de cada Big Number, verificando, entre eles,
+*          qual é o maior. Se os dígitos forem iguaís, partimos para o próximo Nó, realizando
+*          a verificação novamente. Isso se repete, enquanto os dígitos forem iguais, até não
+*          ter mais dígitos para serem comparados, constatando que os números são iguais.
+*
+* @return 1, para x > y.
+* @return -1, para x < y.
+* @return 0, para x e y iguais.
+*/
+
+int compare_big_numbers_with_same_length(BigNumber *x, BigNumber *y) {
+    Node *node_x = x->first_digit;
+    Node *node_y = y->first_digit;   
+
+    while (node_x && node_y) {
+        if (node_x->digit > node_y->digit) return 1;
+        if (node_x->digit < node_y->digit) return -1;
+
+        node_x = node_x->next_digit;
+        node_y = node_y->next_digit;
+    }
+
+    return 0;
+}
+
+
+/* 
+* @brief Agrega as funções de comparação para retornar o maior Big Number.
+*
+* @param x Big Number a ser comparado.
+* @param y Big Number a ser comparado.
+*
+* @details É usado a função de comparação do tamanho (compare_big_numbers_length),
+*          junto com a comparação de valor para os que possuem o mesmo tamanho
+*          (compare_big_numbers_with_same_length), para que, no fim, retorne de fato
+*          qual é o Big Number de maior valor, ou se possuem o mesmo valor.
+*
+* @return 1, para x > y.
+* @return -1, para x < y.
+* @return 0, para x e y iguais.
+*/
+
+int return_largest_big_number(BigNumber *x, BigNumber *y) {
+    int length_comparison = compare_big_numbers_length(x, y);
+    if (length_comparison != 0) return length_comparison;
+
+    return compare_big_numbers_with_same_length(x, y);
 }
