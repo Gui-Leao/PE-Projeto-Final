@@ -10,14 +10,15 @@ int main() {
     printf("A comparação entre os Big Numbers retornou: %d\n", comparison_big_numbers);
 
     BigNumber* sum = sum_big_numbers(x, y);
+    BigNumber* subtraction = subtract_big_numbers(x, y);
 
     print_big_number(sum);
+    print_big_number(subtraction);
 
     free_big_number(x);
     free_big_number(y);
     free_big_number(sum);
-
-    printf("\n");
+    free_big_number(subtraction);
 
     return 0;
 }

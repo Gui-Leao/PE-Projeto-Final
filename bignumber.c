@@ -84,6 +84,8 @@ void print_big_number(BigNumber *big_number) {
         printf("%d", current_node->digit);
         current_node = current_node->next_digit;
     }
+
+    printf("\n");
 }
 
 
@@ -271,6 +273,39 @@ BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
         }
 
         return result;
+    }
+
+    return result;
+}
+
+
+BigNumber* subtract_big_numbers(BigNumber *x, BigNumber *y) {
+    BigNumber* result = create_big_number("");
+
+    Node* node_x = x->last_digit;
+    Node* node_y = y->last_digit;
+
+    int borrow_digit = 0;
+
+    while (node_x != NULL || node_y != NULL) {
+        int digit_x, digit_y, subtraction;
+
+        digit_x = (node_x != NULL) ? node_x->digit : 0;
+        digit_y = (node_y != NULL) ? node_y->digit : 0;
+    
+        subtraction = digit_x - digit_y - borrow_digit;
+
+        if (subtraction < 0) {
+            subtraction += 10;
+            borrow_digit = 1;
+        } else {
+            borrow_digit = 0;
+        }
+
+        add_node_to_big_number(result, subtraction);
+
+        if (node_x != NULL) node_x = node_x->prev_digit;
+        if (node_y != NULL) node_y = node_y->prev_digit;
     }
 
     return result;
