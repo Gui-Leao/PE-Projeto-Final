@@ -21,7 +21,7 @@ Node* create_node(int digit) {
     new_node->prev_digit = NULL;
 
     return new_node;
-};
+}
 
 
 /* 
@@ -76,10 +76,10 @@ BigNumber* create_big_number(char *str_number) {
 */
 
 void print_big_number(BigNumber *big_number) {
-    if ((big_number->is_positive = 0)) printf("-");
+    if ((big_number->is_positive == 0)) printf("-");
 
     Node* current_node = big_number->first_digit;
- 
+
     while (current_node != NULL) {
         printf("%d", current_node->digit);
         current_node = current_node->next_digit;
@@ -94,8 +94,8 @@ void print_big_number(BigNumber *big_number) {
 */
 
 void free_big_number(BigNumber *big_number) {
-    Node* current_node = big_number->first_digit;  
- 
+    Node* current_node = big_number->first_digit;   
+
     while (current_node != NULL) {
         Node* next_node = current_node->next_digit;
         free(current_node);
@@ -107,56 +107,31 @@ void free_big_number(BigNumber *big_number) {
 
 
 /* 
-* @brief Realiza a soma entre dois Big Numbers.
+* @brief Adiciona um novo Nó em um Big Number.
 *
-* @param x Big Number a ser somado.
-* @param y Big Number a ser somado.
+* @param big_number Registro do tipo Big Number.
+* @param digit Número que representa o nó a ser criado.
 *
-* @details A função inicializa a soma a partir do último Nó dos Big Numbers, e só finaliza
-*          quando não há mais nenhum Nó, tanto do Big Number x, ou do Big Number y, além de
-*          não precisar somar o dígito de transporte (quando a soma feita entre dois
-*          dígitos ultrapassa 10).
+* @details A função atualiza os campos do Nó criado (dígito posterior e anterior),
+*          além alocar o novo Nó na primeira posição do Big Number.
 */
 
-BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
-    BigNumber* result = create_big_number("");
+void add_node_to_big_number(BigNumber *big_number, int digit) {
+    Node* new_node = (Node*)malloc(sizeof(Node));
 
-    Node* node_x = x->last_digit;
-    Node* node_y = y->last_digit;
+    new_node->digit = digit;
+    new_node->next_digit = big_number->first_digit;
+    new_node->prev_digit = NULL;
 
-    int carry_digit = 0;
-
-    while (node_x != NULL || node_y != NULL || carry_digit > 0) {
-        int digit_x, digit_y, sum, result_digit;
-
-        digit_x = (node_x != NULL) ? node_x->digit : 0;
-        digit_y = (node_y != NULL) ? node_y->digit : 0;
-
-        sum = digit_x + digit_y + carry_digit;
-
-        carry_digit = sum / 10;
-        result_digit = sum % 10;
-
-        Node* new_node = (Node*)malloc(sizeof(Node));
-        new_node->digit = result_digit;
-        new_node->next_digit = result->first_digit;
-        new_node->prev_digit = NULL;
-
-        if (result->first_digit == NULL) result->last_digit = new_node;
-        if (result->first_digit != NULL) result->first_digit->prev_digit = new_node;
-
-        result->first_digit = new_node;
+    if (big_number->first_digit == NULL) big_number->last_digit = new_node;
+    if (big_number->first_digit != NULL) big_number->first_digit->prev_digit = new_node;
         
-        if (node_x != NULL) node_x = node_x->prev_digit;
-        if (node_y != NULL) node_y = node_y->prev_digit;
-    }
-
-    return result;
+    big_number->first_digit = new_node;
 }
 
 
 /* 
-* @brief Verifica os tamanhos dos Big Numbers.
+* @brief Verifica os tamanhos entre dois Big Numbers.
 *
 * @param x Big Number a ser comparado.
 * @param y Big Number a ser comparado.
@@ -190,9 +165,11 @@ int compare_big_numbers_length(BigNumber *x, BigNumber *y) {
 
     return 0;
 }
+
+
 /* 
 * @brief Função auxiliar para verificar, daqueles Big Numbers que possuem o mesmo tamanho, 
-*        qual é o maior.
+*        qual é o maior. A função compara apenas o módulo dos números, sem considerar o sinal.
 *
 * @param x Big Number a ser comparado.
 * @param y Big Number a ser comparado.
@@ -222,7 +199,6 @@ int compare_big_numbers_with_same_length(BigNumber *x, BigNumber *y) {
     return 0;
 }
 
-
 /* 
 * @brief Agrega as funções de comparação para retornar o maior Big Number.
 *
@@ -244,4 +220,58 @@ int return_largest_big_number(BigNumber *x, BigNumber *y) {
     if (length_comparison != 0) return length_comparison;
 
     return compare_big_numbers_with_same_length(x, y);
+}
+
+
+/* 
+* @brief Realiza a soma entre dois Big Numbers.
+*
+* @param x Big Number a ser somado.
+* @param y Big Number a ser somado.
+*
+* @details A função inicializa a soma a partir do último Nó dos Big Numbers, e só finaliza
+*          quando não há mais nenhum Nó, tanto do Big Number x, ou do Big Number y, além de
+*          não precisar somar o dígito de transporte (quando a soma feita entre dois
+*          dígitos ultrapassa 10).
+*/
+
+BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
+    BigNumber* result = create_big_number("");
+
+    if (x->is_positive != y->is_positive) {
+        printf("Vi aqui que os dois sinais estão trocados");
+    } 
+    
+    else {
+        if (x->is_positive == 0 && y->is_positive == 0) {
+            result->is_positive = 0;
+        } else {
+            result->is_positive = 1;
+        }
+
+        Node* node_x = x->last_digit;
+        Node* node_y = y->last_digit;
+
+        int carry_digit = 0;
+
+        while (node_x != NULL || node_y != NULL || carry_digit > 0) {
+            int digit_x, digit_y, sum, new_result_digit;
+
+            digit_x = (node_x != NULL) ? node_x->digit : 0;
+            digit_y = (node_y != NULL) ? node_y->digit : 0;
+
+            sum = digit_x + digit_y + carry_digit;
+            carry_digit = sum / 10;
+            new_result_digit = sum % 10;
+
+            add_node_to_big_number(result, new_result_digit);
+            
+            if (node_x != NULL) node_x = node_x->prev_digit;
+            if (node_y != NULL) node_y = node_y->prev_digit;
+        }
+
+        return result;
+    }
+
+    return result;
 }
