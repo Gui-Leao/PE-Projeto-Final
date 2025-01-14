@@ -133,62 +133,53 @@ void add_node_to_big_number(BigNumber *big_number, int digit) {
 
 
 /* 
-* @brief Verifica os tamanhos entre dois Big Numbers.
+* @brief Soma a quantidade de dígitos de um Big Number.
 *
-* @param x Big Number a ser comparado.
-* @param y Big Number a ser comparado.
+* @param x Big Number a ter os dígitos contados.
 *
-* @details Função auxiliar para verificar, dígito a dígito (Nó) de cada Big Number 
-*          e retornar qual possui o maior tamanho, logo, o maior valor. 
+* @details A função passa por todos os Nós do Big Number e soma a quantidade.
 *
-* @return 1, para x > y.
-* @return -1, para x < y.
-* @return 0, para x e y com mesmo tamanho.
+* @return int length Tamanho do Big Number
 */
 
-int compare_big_numbers_length(BigNumber *x, BigNumber *y) {
-    Node *node_x = x->first_digit;
-    Node *node_y = y->first_digit;
+int get_big_number_length(BigNumber *big_number) {
+    int length = 0;
 
-    int len_x = 0, len_y = 0;
+    Node *current_node = big_number->first_digit;
 
-    while (node_x) {
-        len_x++;
-        node_x = node_x->next_digit;
+    while (current_node) {
+        length++;
+        current_node = current_node->next_digit;
     }
 
-    while (node_y) {
-        len_y++;
-        node_y = node_y->next_digit;
-    }
-
-    if (len_x > len_y) return 1;
-    if (len_x < len_y) return -1;
-
-    return 0;
+    return length;
 }
 
 
 /* 
-* @brief Função auxiliar para verificar, daqueles Big Numbers que possuem o mesmo tamanho, 
-*        qual é o maior. A função compara apenas o módulo dos números, sem considerar o sinal.
+* @brief Compara o módulo de dois Big Numbers.
 *
 * @param x Big Number a ser comparado.
 * @param y Big Number a ser comparado.
+
+* @details A função primeiro compara o tamanho de cada Big Number, se
+*          não for possível constatar o maior valor por meio dessa forma,
+*          a função avança comparando dígito a dígito de cada Big Number.
 *
-* @details A função parte do primeiro Nó (dígito) de cada Big Number, verificando, entre eles,
-*          qual é o maior. Se os dígitos forem iguaís, partimos para o próximo Nó, realizando
-*          a verificação novamente. Isso se repete, enquanto os dígitos forem iguais, até não
-*          ter mais dígitos para serem comparados, constatando que os números são iguais.
-*
-* @return 1, para x > y.
-* @return -1, para x < y.
-* @return 0, para x e y iguais.
+* @return int 1,  se x > y
+* @return int -1, se x < y
+* @return int 0,  se x = y
 */
 
-int compare_big_numbers_with_same_length(BigNumber *x, BigNumber *y) {
+int compare_big_numbers_modules(BigNumber *x, BigNumber *y) {
+    int len_x = get_big_number_length(x);
+    int len_y = get_big_number_length(y);
+
+    if (len_x > len_y) return 1;
+    if (len_x < len_y) return -1;
+
     Node *node_x = x->first_digit;
-    Node *node_y = y->first_digit;   
+    Node *node_y = y->first_digit;
 
     while (node_x && node_y) {
         if (node_x->digit > node_y->digit) return 1;
@@ -196,32 +187,9 @@ int compare_big_numbers_with_same_length(BigNumber *x, BigNumber *y) {
 
         node_x = node_x->next_digit;
         node_y = node_y->next_digit;
-    }
+    } 
 
     return 0;
-}
-
-/* 
-* @brief Agrega as funções de comparação para retornar o maior Big Number.
-*
-* @param x Big Number a ser comparado.
-* @param y Big Number a ser comparado.
-*
-* @details É usado a função de comparação do tamanho (compare_big_numbers_length),
-*          junto com a comparação de valor para os que possuem o mesmo tamanho
-*          (compare_big_numbers_with_same_length), para que, no fim, retorne de fato
-*          qual é o Big Number de maior valor, ou se possuem o mesmo valor.
-*
-* @return 1, para x > y.
-* @return -1, para x < y.
-* @return 0, para x e y iguais.
-*/
-
-int return_largest_big_number(BigNumber *x, BigNumber *y) {
-    int length_comparison = compare_big_numbers_length(x, y);
-    if (length_comparison != 0) return length_comparison;
-
-    return compare_big_numbers_with_same_length(x, y);
 }
 
 
@@ -232,14 +200,17 @@ int return_largest_big_number(BigNumber *x, BigNumber *y) {
 * @param big_number Big Number a ter os zeros removidos da esquerda.
 *
 * @details A função passa por por todos os dígitos da esquerda que são iguais a zero,
-*          removendo ele do Nó e alterando qual será o novo primeiro Nó do Big Number.
-*          Se o Big Number for exatamente igual a zero, ele não exclui do Big Number.
+*          removendo o Nó do Big Number e alterando qual será o novo primeiro Nó.
+*          Se o Big Number for exatamente igual a zero, nada é feito.
 */
+
 void remove_zeros_from_left(BigNumber *big_number) {
     while (big_number->first_digit->digit == 0 && big_number->first_digit != big_number->last_digit) {
         Node *node_to_remove = big_number->first_digit;
+
         big_number->first_digit = node_to_remove->next_digit;
         big_number->first_digit->prev_digit = NULL;
+
         free(node_to_remove);
     }
 }
@@ -251,17 +222,44 @@ void remove_zeros_from_left(BigNumber *big_number) {
 * @param x Big Number a ser somado.
 * @param y Big Number a ser somado.
 *
-* @details A função inicializa a soma a partir do último Nó dos Big Numbers, e só finaliza
-*          quando não há mais nenhum Nó, tanto do Big Number x, ou do Big Number y, além de
-*          não precisar somar o dígito de transporte (quando a soma feita entre dois
-*          dígitos ultrapassa 10).
+* @details A função faz, primeiramente, a validação de sinais da operação. Se observado
+*          sinais diferentes entre os dois números, a função de subtração é acionada.
+*          Caso a soma seja de fato realizada, é iniciado a partir do último Nó dos 
+*          Big Numbers, e só finaliza quando não há mais nenhum Nó, tanto do Big Number x, 
+*          ou do Big Number y, além de não precisar somar o dígito de transporte.
+*
+* @return BigNumber result Resultado da operação.
 */
 
 BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
     BigNumber* result = create_big_number("");
 
     if (x->is_positive != y->is_positive) {
-        printf("Vi aqui que os dois sinais estão trocados");
+        int comparison_big_numbers_modules = compare_big_numbers_modules(x, y);
+        
+        if (comparison_big_numbers_modules == 1) {
+            int result_sign = 1 ? x->is_positive == 1 : 0;
+
+            x->is_positive = 1;
+            y->is_positive = 1;
+
+            result = subtract_big_numbers(x, y);
+            result->is_positive = result_sign;
+        } 
+        
+        else if (comparison_big_numbers_modules == -1) {
+            int result_sign = 1 ? y->is_positive == 1 : 0;
+
+            x->is_positive = 1;
+            y->is_positive = 1;
+
+            result = subtract_big_numbers(y, x);
+            result->is_positive = result_sign;
+        } 
+        
+        else {
+            add_node_to_big_number(result, 0);
+        }
     } 
     
     else {

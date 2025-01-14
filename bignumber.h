@@ -19,7 +19,7 @@ BigNumber* subtract_big_numbers(BigNumber *x, BigNumber *y);
 BigNumber* divide_big_numbers(BigNumber *x, BigNumber *y);
 BigNumber* multiply_big_numbers(BigNumber *x, BigNumber *y);
 
-int return_largest_big_number(BigNumber *x, BigNumber *y);
+int compare_big_numbers_modules(BigNumber *x, BigNumber *y);
 
 void print_big_number(BigNumber *x);
 void free_big_number(BigNumber *x);
