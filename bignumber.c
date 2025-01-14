@@ -84,8 +84,6 @@ void print_big_number(BigNumber *big_number) {
         printf("%d", current_node->digit);
         current_node = current_node->next_digit;
     }
-
-    printf("\n");
 }
 
 
@@ -161,7 +159,7 @@ int get_big_number_length(BigNumber *big_number) {
 *
 * @param x Big Number a ser comparado.
 * @param y Big Number a ser comparado.
-
+*
 * @details A função primeiro compara o tamanho de cada Big Number, se
 *          não for possível constatar o maior valor por meio dessa forma,
 *          a função avança comparando dígito a dígito de cada Big Number.
@@ -213,6 +211,70 @@ void remove_zeros_from_left(BigNumber *big_number) {
 
         free(node_to_remove);
     }
+
+    if (big_number->first_digit == big_number->last_digit && big_number->first_digit->digit == 0) {
+        big_number->is_positive = 1;
+    }
+}
+
+
+/* 
+* @brief Determina o sinal do resultado de uma subtração quando os dois Big Numbers
+*        possuem o mesmo sinal.
+*
+* @param x Big Number.
+* @param y Big Number.
+*
+* @details Se os dois números forem positivos na subtração, teremos uma subtração do tipo
+*          x - y, logo, o resultado será positivo se x > y. Para o caso contrário, 
+*          em que os dois são negativos, teremos uma subtração do tipo -x + y, logo, 
+*          o resultado será positivo se y > x.
+*
+* @return 1, para resultado positivo.
+* @return 0, para resultado negativo.
+* @return -1, para caso inválido.
+*/
+
+int determine_sign_in_subtraction(BigNumber *x, BigNumber *y) {
+    int comparison_big_numbers_modules = compare_big_numbers_modules(x, y);
+
+    if (x->is_positive == 0) {
+        return 1 ? comparison_big_numbers_modules == -1 : 0;
+    }
+
+    else if (x->is_positive == 1) {
+        return 1 ? comparison_big_numbers_modules == 1 : 0;
+    }
+
+    return -1;
+}
+
+
+/* 
+* @brief Determina a ordem dos números em uma subtração.
+*
+* @param x Big Number.
+* @param y Big Number.
+*
+* @details A função de subtração, para funcionar corretamente, deve ter o maior valor na
+*          na primeira ordem da subtração. Se observado que y > x, os Nós são invertidos.
+*          A função também verifica se os dois números são exatamente iguais, retornando 0,
+*          nesse caso.
+* 
+*/
+
+void determine_order_of_subtraction(BigNumber* x, Node** node_x, BigNumber* y, Node** node_y, BigNumber* result) {
+    int comparison_big_numbers_modules = compare_big_numbers_modules(x, y);   
+
+    if (comparison_big_numbers_modules == -1) {
+        *node_x = y->last_digit;
+        *node_y = x->last_digit;
+    }
+
+    else if (comparison_big_numbers_modules == 0) {
+        add_node_to_big_number(result, 0);
+        return;
+    }
 }
 
 
@@ -243,7 +305,7 @@ BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
             x->is_positive = 1;
             y->is_positive = 1;
 
-            result = subtract_big_numbers(x, y);
+            result = subtraction_big_numbers(x, y);
             result->is_positive = result_sign;
         } 
         
@@ -253,12 +315,13 @@ BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
             x->is_positive = 1;
             y->is_positive = 1;
 
-            result = subtract_big_numbers(y, x);
+            result = subtraction_big_numbers(y, x);
             result->is_positive = result_sign;
         } 
         
         else {
             add_node_to_big_number(result, 0);
+            return result;
         }
     } 
     
@@ -289,41 +352,79 @@ BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
             if (node_x != NULL) node_x = node_x->prev_digit;
             if (node_y != NULL) node_y = node_y->prev_digit;
         }
-
-        return result;
     }
 
     return result;
 }
 
 
-BigNumber* subtract_big_numbers(BigNumber *x, BigNumber *y) {
+/* 
+* @brief Realiza a subtração entre dois Big Numbers.
+*
+* @param x Big Number a ser subtraído.
+* @param y Big Number a ser subtraído.
+*
+* @details Em primeiro momento, verificamos se os dois números tem sinais diferentes,
+*          para que, dessa forma, a função de soma seja acionada. O resultado dessa soma
+*          será determinado olhando para x, já que, se possuem sinais diferentes, a subtração
+*          irá inverter o sinal de y, logo, quando x é positivo, temos y negativo, resultando
+*          em uma subtração do tipo x - (-y) = x + y (uma soma com sinal positivo). 
+*          Quando x é negativo, temos y positivo, resultando em uma subtração do tipo 
+*          -x - (y) = -x - y (uma soma com sinal negativo).
+*
+*          Quando a subtração é de fato acionada (dois números com mesmo sinal).
+*          O sinal do resultado é determinado a partir dos valores da operação, além de
+*          rearranjar a ordem da subtração, colocando o Big Number de maior valor em primeiro,
+*          se necessário. A operação de subtração é feita dígito a dígito, verificando a necessidade
+*          de empréstimo quando necessário, além de subtrair esse empréstimo na próxima iteração.       
+*
+* @return BigNumber result Resultado da operação.
+*/
+
+BigNumber* subtraction_big_numbers(BigNumber *x, BigNumber *y) {
     BigNumber* result = create_big_number("");
 
-    Node* node_x = x->last_digit;
-    Node* node_y = y->last_digit;
+    if (x->is_positive != y->is_positive) {
+        int result_sign = 1 ? x->is_positive == 1 : 0;
 
-    int borrow_digit = 0;
+        x->is_positive = 1;
+        y->is_positive = 1;
 
-    while (node_x != NULL || node_y != NULL) {
-        int digit_x, digit_y, subtraction;
+        result = sum_big_numbers(x, y);
+        result->is_positive = result_sign;
+    }
 
-        digit_x = (node_x != NULL) ? node_x->digit : 0;
-        digit_y = (node_y != NULL) ? node_y->digit : 0;
-    
-        subtraction = digit_x - digit_y - borrow_digit;
+    else {
+        int result_sign = determine_sign_in_subtraction(x, y);
 
-        if (subtraction < 0) {
-            subtraction += 10;
-            borrow_digit = 1;
-        } else {
-            borrow_digit = 0;
+        Node* node_x = x->last_digit;
+        Node* node_y = y->last_digit;
+        determine_order_of_subtraction(x, &node_x, y, &node_y, result);
+
+        int borrow_digit = 0;
+
+        while (node_x != NULL || node_y != NULL) {
+            int digit_x, digit_y, subtraction;
+
+            digit_x = (node_x != NULL) ? node_x->digit : 0;
+            digit_y = (node_y != NULL) ? node_y->digit : 0;
+        
+            subtraction = digit_x - digit_y - borrow_digit;
+
+            if (subtraction < 0) {
+                subtraction += 10;
+                borrow_digit = 1;
+            } else {
+                borrow_digit = 0;
+            }
+
+            add_node_to_big_number(result, subtraction);
+
+            if (node_x != NULL) node_x = node_x->prev_digit;
+            if (node_y != NULL) node_y = node_y->prev_digit;
         }
 
-        add_node_to_big_number(result, subtraction);
-
-        if (node_x != NULL) node_x = node_x->prev_digit;
-        if (node_y != NULL) node_y = node_y->prev_digit;
+        result->is_positive = result_sign;
     }
 
     remove_zeros_from_left(result);

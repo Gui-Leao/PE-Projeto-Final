@@ -15,7 +15,7 @@ typedef struct BigNumber {
 
 BigNumber* create_big_number(char *str_number);
 BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y);
-BigNumber* subtract_big_numbers(BigNumber *x, BigNumber *y);
+BigNumber* subtraction_big_numbers(BigNumber *x, BigNumber *y);
 BigNumber* divide_big_numbers(BigNumber *x, BigNumber *y);
 BigNumber* multiply_big_numbers(BigNumber *x, BigNumber *y);
 

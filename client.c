@@ -3,22 +3,28 @@
 #include "bignumber.h"
 
 int main() {
-    BigNumber* x = create_big_number("-111");
-    BigNumber* y = create_big_number("-11");
+    BigNumber* x = create_big_number("717019");
+    BigNumber* y = create_big_number("293264");
 
-    int comparison_big_numbers = compare_big_numbers_modules(x, y);
-    printf("A comparação entre os Big Numbers retornou: %d\n", comparison_big_numbers);
+    BigNumber* w = create_big_number("-10");
+    BigNumber* z = create_big_number("-13");
+
 
     BigNumber* sum = sum_big_numbers(x, y);
-    BigNumber* subtract = subtract_big_numbers(x, y);
+    BigNumber* subtraction = subtraction_big_numbers(w, z);
 
+    printf("Soma: ");
     print_big_number(sum);
-    print_big_number(subtract);
+    printf("\n");
+
+    printf("Subtração: ");
+    print_big_number(subtraction);
+    printf("\n");
 
     free_big_number(x);
     free_big_number(y);
     free_big_number(sum);
-    free_big_number(subtract);
+    free_big_number(subtraction);
 
     return 0;
 }
