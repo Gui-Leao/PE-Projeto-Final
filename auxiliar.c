@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "auxiliar.h"
 #include "bignumber.h"
 
@@ -86,6 +87,46 @@ int compare_big_numbers_modules(BigNumber *x, BigNumber *y) {
     } 
 
     return 0;
+}
+
+
+/* 
+* @brief A função é responsável por executar uma operação inversa (entre soma ou subtração)
+*        quando acionada.
+*
+* @param char switch_to Define para qual operação vai ser trocada (sum ou sub).
+* @param int sign Sinal do número que vai servir como base para o sinal do resultado final.
+* @param x Big Number a ser somado ou subtraído.
+* @param y Big Number a ser somado ou subtraído.
+* @param result Big Number que carrega o resultado final.
+*
+* @details A função começa verificando o sinal do resultado final, sempre a partir do
+*          primeiro número da operação entre sinais diferentes, já que ele não vai
+*          ter o sinal trocado. Logo após, os atributos "is_positive" é setado como
+*          positivo, para que nas operações a serem acionadas, não ter nenhuma manipulação
+*          de sinais, já que já temos o sinal do resultado.
+*
+* @return BigNumber result Resultado da operação.
+*/
+
+
+BigNumber* switch_to_sum_or_subtraction(char *switch_to, int sign, BigNumber *x, BigNumber *y, BigNumber *result) {
+    int result_sign = 1 ? sign == 1 : 0;
+
+    x->is_positive = 1;
+    y->is_positive = 1;
+    
+    if (strcmp(switch_to, "sub") == 0) {
+        result = subtraction_big_numbers(x, y);
+        result->is_positive = result_sign;
+    }
+
+    else {
+        result = sum_big_numbers(x, y);
+        result->is_positive = result_sign;
+    }
+
+    return result;
 }
 
 

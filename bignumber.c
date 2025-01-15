@@ -129,30 +129,18 @@ BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
         int comparison_big_numbers_modules = compare_big_numbers_modules(x, y);
         
         if (comparison_big_numbers_modules == 1) {
-            int result_sign = 1 ? x->is_positive == 1 : 0;
-
-            x->is_positive = 1;
-            y->is_positive = 1;
-
-            result = subtraction_big_numbers(x, y);
-            result->is_positive = result_sign;
-        } 
+            result = switch_to_sum_or_subtraction("sub", x->is_positive, x, y, result);
+        }
         
         else if (comparison_big_numbers_modules == -1) {
-            int result_sign = 1 ? y->is_positive == 1 : 0;
-
-            x->is_positive = 1;
-            y->is_positive = 1;
-
-            result = subtraction_big_numbers(y, x);
-            result->is_positive = result_sign;
+            result = switch_to_sum_or_subtraction("sub", y->is_positive, y, x, result);  
         } 
         
         else {
             add_node_to_big_number(result, 0);
             return result;
         }
-    } 
+    }
     
     else {
         if (x->is_positive == 0 && y->is_positive == 0) {
@@ -214,20 +202,14 @@ BigNumber* subtraction_big_numbers(BigNumber *x, BigNumber *y) {
     BigNumber* result = create_big_number("");
 
     if (x->is_positive != y->is_positive) {
-        int result_sign = 1 ? x->is_positive == 1 : 0;
-
-        x->is_positive = 1;
-        y->is_positive = 1;
-
-        result = sum_big_numbers(x, y);
-        result->is_positive = result_sign;
+        result = switch_to_sum_or_subtraction("sum", x->is_positive, x, y, result);
     }
 
     else {
-        int result_sign = determine_sign_in_subtraction(x, y);
-
         Node* node_x = x->last_digit;
         Node* node_y = y->last_digit;
+
+        int result_sign = determine_sign_in_subtraction(x, y);
         determine_order_of_subtraction(x, &node_x, y, &node_y, result);
 
         int borrow_digit = 0;

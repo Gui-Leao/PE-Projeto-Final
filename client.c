@@ -3,11 +3,11 @@
 #include "bignumber.h"
 
 int main() {
-    BigNumber* x = create_big_number("717019");
-    BigNumber* y = create_big_number("293264");
+    BigNumber* x = create_big_number("7");
+    BigNumber* y = create_big_number("-100");
 
     BigNumber* w = create_big_number("-10");
-    BigNumber* z = create_big_number("-13");
+    BigNumber* z = create_big_number("3");
 
 
     BigNumber* sum = sum_big_numbers(x, y);
