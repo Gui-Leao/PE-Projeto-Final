@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "auxiliar.h"
 #include "bignumber.h"
 
@@ -185,11 +186,13 @@ int compare_big_numbers_modules(BigNumber *x, BigNumber *y) {
 * @return BigNumber result Resultado da operação.
 */
 
-BigNumber* switch_to_sum_or_subtraction(char *switch_to, int sign, BigNumber *x, BigNumber *y, BigNumber *result) {
-    int result_sign = 1 ? sign == 1 : 0;
+BigNumber* switch_to_sum_or_subtraction(char *switch_to, bool sign, BigNumber *x, BigNumber *y, BigNumber *result) {
+    bool result_sign = true ? sign == true : false;
 
-    x->is_positive = 1;
-    y->is_positive = 1;
+    x->is_positive = true;
+    y->is_positive = true;
+
+    free_big_number(result);
     
     if (strcmp(switch_to, "sub") == 0) {
         result = subtraction_big_numbers(x, y);
@@ -217,23 +220,22 @@ BigNumber* switch_to_sum_or_subtraction(char *switch_to, int sign, BigNumber *x,
 *          em que os dois são negativos, teremos uma subtração do tipo -x + y, logo, 
 *          o resultado será positivo se y > x.
 *
-* @return 1, para resultado positivo.
-* @return 0, para resultado negativo.
-* @return -1, para caso inválido.
+* @return true, para resultado positivo.
+* @return false, para resultado negativo.
 */
 
-int determine_sign_in_subtraction(BigNumber *x, BigNumber *y) {
+bool determine_sign_in_subtraction(BigNumber *x, BigNumber *y) {
     int comparison_big_numbers_modules = compare_big_numbers_modules(x, y);
 
-    if (x->is_positive == 0) {
-        return 1 ? comparison_big_numbers_modules == -1 : 0;
+    if (x->is_positive == false) {
+        return true ? comparison_big_numbers_modules == -1 : false;
     }
 
-    else if (x->is_positive == 1) {
-        return 1 ? comparison_big_numbers_modules == 1 : 0;
+    else if (x->is_positive == true) {
+        return true ? comparison_big_numbers_modules == 1 : false;
     }
 
-    return -1;
+    return NULL;
 }
 
 
@@ -287,6 +289,6 @@ void remove_zeros_from_left(BigNumber *big_number) {
     }
 
     if (big_number->first_digit == big_number->last_digit && big_number->first_digit->digit == 0) {
-        big_number->is_positive = 1;
+        big_number->is_positive = true;
     }
 }

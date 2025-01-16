@@ -1,6 +1,8 @@
 #ifndef bignumber_h
 #define bignumber_h
 
+#include <stdbool.h>
+
 typedef struct Node {
     char digit;
     struct Node *next_digit;
@@ -8,7 +10,7 @@ typedef struct Node {
 } Node;
 
 typedef struct BigNumber {
-    int is_positive;
+    bool is_positive;
     Node *first_digit;
     Node *last_digit;
 } BigNumber;

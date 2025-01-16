@@ -41,12 +41,12 @@ BigNumber* create_big_number(char *str_number) {
 
     big_number->first_digit = NULL;
     big_number->last_digit = NULL;
-    big_number->is_positive = 1;
+    big_number->is_positive = true;
 
     int i = 0;
 
     if (str_number[i] == '-') {
-        big_number->is_positive = 0;
+        big_number->is_positive = false;
         i++;
     }
 
@@ -77,7 +77,7 @@ BigNumber* create_big_number(char *str_number) {
 */
 
 void print_big_number(BigNumber *big_number) {
-    if ((big_number->is_positive == 0)) printf("-");
+    if ((big_number->is_positive == false)) printf("-");
 
     Node* current_node = big_number->first_digit;
 
@@ -145,10 +145,10 @@ BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
     }
     
     else {
-        if (x->is_positive == 0 && y->is_positive == 0) {
-            result->is_positive = 0;
+        if (x->is_positive == false && y->is_positive == false) {
+            result->is_positive = false;
         } else {
-            result->is_positive = 1;
+            result->is_positive = true;
         }
 
         Node* node_x = x->last_digit;
@@ -211,7 +211,7 @@ BigNumber* subtraction_big_numbers(BigNumber *x, BigNumber *y) {
         Node* node_x = x->last_digit;
         Node* node_y = y->last_digit;
 
-        int result_sign = determine_sign_in_subtraction(x, y);
+        bool result_sign = determine_sign_in_subtraction(x, y);
         determine_order_of_subtraction(x, &node_x, y, &node_y, result);
 
         int borrow_digit = 0;
