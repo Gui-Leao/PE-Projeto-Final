@@ -4,6 +4,7 @@
 #include "bignumber.h"
 
 char* read_input();
+void execute_program();
 
 void add_node_to_big_number(BigNumber *big_number, int digit);
 

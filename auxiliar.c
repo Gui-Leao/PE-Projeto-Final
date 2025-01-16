@@ -4,6 +4,14 @@
 #include "auxiliar.h"
 #include "bignumber.h"
 
+/* 
+* @brief Lê a entrada fornecida pelo arquivo de teste.
+*
+* @details A função aloca dinamicamente na memória a string que está sendo fornecida
+*          na entrada através do getchar(), identificando se é o fim do arquivo ou
+*          o fim da linha.
+*/
+
 char* read_input() {
     int capacity = 16;
     int size = 0;
@@ -12,7 +20,8 @@ char* read_input() {
     int c;
 
     while ((c = getchar()) != EOF && c != '\n') {
-        input[size++] = c;
+        input[size] = c;
+	size++;
 
         if (size + 1 >= capacity) {
             capacity *= 2;
@@ -25,6 +34,51 @@ char* read_input() {
     input[size] = '\0';
 
     return input;
+}
+
+/* 
+* @brief Executa o programa.
+*
+* @details Aqui é usado a função read_input() pra alocar dinamicamente
+*          as strings fornecidas dos Big Numbers e das operações.
+*          Se observado que não há mais números sendo fornecidos para as operações,
+*          o programa para.
+*/
+
+void execute_program() {
+    while(1) {
+        char* number_1 = read_input();
+        
+        if(strlen(number_1) == 0) {
+            free(number_1);
+            break;
+        }
+
+        char* number_2 = read_input();
+        char* operation = read_input();
+
+        BigNumber* big_num1 = create_big_number(number_1);
+        BigNumber* big_num2 = create_big_number(number_2);
+        BigNumber* result = NULL;
+
+        switch (*operation) {
+            case '+':
+                result = sum_big_numbers(big_num1, big_num2);
+                break;
+            case '-':
+                result = subtraction_big_numbers(big_num1, big_num2);
+                break;
+        }
+
+        print_big_number(result);
+
+        free_big_number(big_num1);
+        free_big_number(big_num2);
+        free_big_number(result);
+        free(number_1);
+        free(number_2);
+        free(operation);
+    }
 }
 
 /* 
