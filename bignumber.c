@@ -85,6 +85,8 @@ void print_big_number(BigNumber *big_number) {
         printf("%d", current_node->digit);
         current_node = current_node->next_digit;
     }
+
+    printf("\n");
 }
 
 

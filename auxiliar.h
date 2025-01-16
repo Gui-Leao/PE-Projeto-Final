@@ -3,6 +3,8 @@
 
 #include "bignumber.h"
 
+char* read_input();
+
 void add_node_to_big_number(BigNumber *big_number, int digit);
 
 int get_big_number_length(BigNumber *big_number);

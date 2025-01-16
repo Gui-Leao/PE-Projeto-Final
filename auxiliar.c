@@ -4,6 +4,28 @@
 #include "auxiliar.h"
 #include "bignumber.h"
 
+char* read_input() {
+    int capacity = 16;
+    int size = 0;
+    char* input = malloc(capacity);
+
+    int c;
+
+    while ((c = getchar()) != EOF && c != '\n') {
+        input[size++] = c;
+
+        if (size + 1 >= capacity) {
+            capacity *= 2;
+
+            char* new_input = realloc(input, capacity);
+            input = new_input;
+        }
+    }
+
+    input[size] = '\0';
+
+    return input;
+}
 
 /* 
 * @brief Adiciona um novo Nó em um Big Number.
@@ -108,7 +130,6 @@ int compare_big_numbers_modules(BigNumber *x, BigNumber *y) {
 *
 * @return BigNumber result Resultado da operação.
 */
-
 
 BigNumber* switch_to_sum_or_subtraction(char *switch_to, int sign, BigNumber *x, BigNumber *y, BigNumber *result) {
     int result_sign = 1 ? sign == 1 : 0;

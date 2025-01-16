@@ -1,30 +1,43 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "bignumber.h"
+#include "auxiliar.h"
 
 int main() {
-    BigNumber* x = create_big_number("7");
-    BigNumber* y = create_big_number("-100");
+    while (1) {
+        char* number_1 = read_input();
+        
+        if(strlen(number_1) == 0) {
+            free(number_1);
+            break;
+        }
 
-    BigNumber* w = create_big_number("-10");
-    BigNumber* z = create_big_number("3");
+        char* number_2 = read_input();
+        char* operation = read_input();
 
+        BigNumber* big_num1 = create_big_number(number_1);
+        BigNumber* big_num2 = create_big_number(number_2);
+        BigNumber* result = NULL;
 
-    BigNumber* sum = sum_big_numbers(x, y);
-    BigNumber* subtraction = subtraction_big_numbers(w, z);
+        switch (*operation) {
+            case '+':
+                result = sum_big_numbers(big_num1, big_num2);
+                break;
+            case '-':
+                result = subtraction_big_numbers(big_num1, big_num2);
+                break;
+        }
 
-    printf("Soma: ");
-    print_big_number(sum);
-    printf("\n");
+        print_big_number(result);
 
-    printf("Subtração: ");
-    print_big_number(subtraction);
-    printf("\n");
-
-    free_big_number(x);
-    free_big_number(y);
-    free_big_number(sum);
-    free_big_number(subtraction);
+        free_big_number(big_num1);
+        free_big_number(big_num2);
+        free_big_number(result);
+        free(number_1);
+        free(number_2);
+        free(operation);
+    }
 
     return 0;
 }
