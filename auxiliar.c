@@ -119,32 +119,8 @@ void add_node_to_big_number(BigNumber big_number, int digit, bool insert_at_end)
             
         big_number->last_digit = new_node;       
     }
+    big_number->num_digits++;
 }
-
-
-/* 
-* @brief Soma a quantidade de dígitos de um Big Number.
-*
-* @param x Big Number a ter os dígitos contados.
-*
-* @details A função passa por todos os Nós do Big Number e soma a quantidade.
-*
-* @return int length Tamanho do Big Number
-*/
-
-int get_big_number_length(BigNumber big_number) {
-    int length = 0;
-
-    Node current_node = big_number->first_digit;
-
-    while (current_node) {
-        length++;
-        current_node = current_node->next_digit;
-    }
-
-    return length;
-}
-
 
 /* 
 * @brief Compara o módulo de dois Big Numbers.
@@ -162,8 +138,8 @@ int get_big_number_length(BigNumber big_number) {
 */
 
 int compare_big_numbers_modules(BigNumber x, BigNumber y) {
-    int len_x = get_big_number_length(x);
-    int len_y = get_big_number_length(y);
+    int len_x = x->num_digits;
+    int len_y = y->num_digits;
 
     if (len_x > len_y) return 1;
     if (len_x < len_y) return -1;

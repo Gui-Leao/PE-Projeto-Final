@@ -42,6 +42,7 @@ BigNumber create_big_number(char *str_number) {
     big_number->first_digit = NULL;
     big_number->last_digit = NULL;
     big_number->is_positive = true;
+    big_number->num_digits = 0;
 
     int i = 0;
 
@@ -52,21 +53,11 @@ BigNumber create_big_number(char *str_number) {
 
     while (str_number[i] != '\0') {
         int digit = str_number[i] - '0';
-        Node new_node = create_node(digit);
-
-        if (big_number->first_digit == NULL) {
-            big_number->first_digit = new_node;
-            big_number->last_digit = new_node;
-        } else {
-            big_number->first_digit->next_digit = new_node;
-            new_node->prev_digit = big_number->last_digit;
-            big_number->last_digit = new_node;
-        }
-
+        
+        add_node_to_big_number(big_number,digit,true);
         i++;
     }
-    // printf("printando ele \n");
-    // print_big_number(big_number);
+
     return big_number;
 }
 
@@ -167,7 +158,6 @@ BigNumber sum_big_numbers(BigNumber x, BigNumber y) {
             sum = digit_x + digit_y + carry_digit;
             carry_digit = sum / 10;
             new_result_digit = sum % 10;
-
             add_node_to_big_number(result, new_result_digit, false);
             
             if (node_x != NULL) node_x = node_x->prev_digit;

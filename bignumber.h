@@ -11,6 +11,7 @@ typedef struct Node {
 
 typedef struct BigNumber {
     bool is_positive;
+    int num_digits;
     Node first_digit;
     Node last_digit;
 }* BigNumber;
