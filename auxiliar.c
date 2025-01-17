@@ -22,7 +22,7 @@ char* read_input() {
 
     while ((c = getchar()) != EOF && c != '\n') {
         input[size] = c;
-	size++;
+        size++;
 
         if (size + 1 >= capacity) {
             capacity *= 2;
@@ -50,7 +50,7 @@ void execute_program() {
     while(1) {
         char* number_1 = read_input();
         
-        if(strlen(number_1) == 0) {
+        if (strlen(number_1) == 0) {
             free(number_1);
             break;
         }
@@ -58,9 +58,9 @@ void execute_program() {
         char* number_2 = read_input();
         char* operation = read_input();
 
-        BigNumber* big_num1 = create_big_number(number_1);
-        BigNumber* big_num2 = create_big_number(number_2);
-        BigNumber* result = NULL;
+        BigNumber big_num1 = create_big_number(number_1);
+        BigNumber big_num2 = create_big_number(number_2);
+        BigNumber result = NULL;
 
         switch (*operation) {
             case '+':
@@ -68,6 +68,10 @@ void execute_program() {
                 break;
             case '-':
                 result = subtraction_big_numbers(big_num1, big_num2);
+                break;
+            default:
+                printf("Operacao nao conhecida\n");
+                result = create_big_number("");
                 break;
         }
 
@@ -93,9 +97,9 @@ void execute_program() {
 *          além alocar o novo Nó na primeira posição do Big Number.
 */
 
-void add_node_to_big_number(BigNumber *big_number, int digit, bool insert_at_end) {
-    Node* new_node = (Node*)malloc(sizeof(Node));
-
+void add_node_to_big_number(BigNumber big_number, int digit, bool insert_at_end) {
+    Node new_node = (Node)malloc(sizeof(struct Node));
+    
     if (!insert_at_end) {
         new_node->digit = digit;
         new_node->next_digit = big_number->first_digit;
@@ -128,10 +132,10 @@ void add_node_to_big_number(BigNumber *big_number, int digit, bool insert_at_end
 * @return int length Tamanho do Big Number
 */
 
-int get_big_number_length(BigNumber *big_number) {
+int get_big_number_length(BigNumber big_number) {
     int length = 0;
 
-    Node *current_node = big_number->first_digit;
+    Node current_node = big_number->first_digit;
 
     while (current_node) {
         length++;
@@ -157,15 +161,15 @@ int get_big_number_length(BigNumber *big_number) {
 * @return int 0,  se x = y
 */
 
-int compare_big_numbers_modules(BigNumber *x, BigNumber *y) {
+int compare_big_numbers_modules(BigNumber x, BigNumber y) {
     int len_x = get_big_number_length(x);
     int len_y = get_big_number_length(y);
 
     if (len_x > len_y) return 1;
     if (len_x < len_y) return -1;
 
-    Node *node_x = x->first_digit;
-    Node *node_y = y->first_digit;
+    Node node_x = x->first_digit;
+    Node node_y = y->first_digit;
 
     while (node_x && node_y) {
         if (node_x->digit > node_y->digit) return 1;
@@ -198,7 +202,7 @@ int compare_big_numbers_modules(BigNumber *x, BigNumber *y) {
 * @return BigNumber result Resultado da operação.
 */
 
-BigNumber* switch_to_sum_or_subtraction(char *switch_to, bool sign, BigNumber *x, BigNumber *y, BigNumber *result) {
+BigNumber switch_to_sum_or_subtraction(char *switch_to, bool sign, BigNumber x, BigNumber y, BigNumber result) {
     bool result_sign = true ? sign == true : false;
 
     x->is_positive = true;
@@ -236,7 +240,7 @@ BigNumber* switch_to_sum_or_subtraction(char *switch_to, bool sign, BigNumber *x
 * @return false, para resultado negativo.
 */
 
-bool determine_sign_in_subtraction(BigNumber *x, BigNumber *y) {
+bool determine_sign_in_subtraction(BigNumber x, BigNumber y) {
     int comparison_big_numbers_modules = compare_big_numbers_modules(x, y);
 
     if (x->is_positive == false) {
@@ -264,7 +268,7 @@ bool determine_sign_in_subtraction(BigNumber *x, BigNumber *y) {
 * 
 */
 
-void determine_order_of_subtraction(BigNumber* x, Node** node_x, BigNumber* y, Node** node_y, BigNumber* result) {
+void determine_order_of_subtraction(BigNumber x, Node* node_x, BigNumber y, Node* node_y, BigNumber result) {
     int comparison_big_numbers_modules = compare_big_numbers_modules(x, y);   
 
     if (comparison_big_numbers_modules == -1) {
@@ -290,9 +294,9 @@ void determine_order_of_subtraction(BigNumber* x, Node** node_x, BigNumber* y, N
 *          Se o Big Number for exatamente igual a zero, nada é feito.
 */
 
-void remove_zeros_from_left(BigNumber *big_number) {
+void remove_zeros_from_left(BigNumber big_number) {
     while (big_number->first_digit->digit == 0 && big_number->first_digit != big_number->last_digit) {
-        Node *node_to_remove = big_number->first_digit;
+        Node node_to_remove = big_number->first_digit;
 
         big_number->first_digit = node_to_remove->next_digit;
         big_number->first_digit->prev_digit = NULL;

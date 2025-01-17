@@ -14,8 +14,8 @@
 *          posterior ou anterior.
 */
 
-Node* create_node(int digit) {
-    Node* new_node = (Node*)malloc(sizeof(Node));
+Node create_node(int digit) {
+    Node new_node = (Node)malloc(sizeof(struct Node));
 
     new_node->digit = digit;
     new_node->next_digit = NULL;
@@ -36,8 +36,8 @@ Node* create_node(int digit) {
 *          string é convertido em inteiro, antes de ser usado para a criação de um Nó.
 */
 
-BigNumber* create_big_number(char *str_number) {
-    BigNumber* big_number = (BigNumber*)malloc(sizeof(BigNumber));
+BigNumber create_big_number(char *str_number) {
+    BigNumber big_number = (BigNumber)malloc(sizeof(struct BigNumber));
 
     big_number->first_digit = NULL;
     big_number->last_digit = NULL;
@@ -52,20 +52,21 @@ BigNumber* create_big_number(char *str_number) {
 
     while (str_number[i] != '\0') {
         int digit = str_number[i] - '0';
-        Node* new_node = create_node(digit);
+        Node new_node = create_node(digit);
 
         if (big_number->first_digit == NULL) {
             big_number->first_digit = new_node;
             big_number->last_digit = new_node;
         } else {
-            big_number->last_digit->next_digit = new_node;
+            big_number->first_digit->next_digit = new_node;
             new_node->prev_digit = big_number->last_digit;
             big_number->last_digit = new_node;
         }
 
         i++;
     }
-
+    // printf("printando ele \n");
+    // print_big_number(big_number);
     return big_number;
 }
 
@@ -76,10 +77,10 @@ BigNumber* create_big_number(char *str_number) {
 * @param big_number Big Number a ser printado.
 */
 
-void print_big_number(BigNumber *big_number) {
+void print_big_number(BigNumber big_number) {
     if ((big_number->is_positive == false)) printf("-");
 
-    Node* current_node = big_number->first_digit;
+    Node current_node = big_number->first_digit;
 
     while (current_node != NULL) {
         printf("%d", current_node->digit);
@@ -96,11 +97,11 @@ void print_big_number(BigNumber *big_number) {
 * @param big_number Big Number a ser liberado da memória.
 */
 
-void free_big_number(BigNumber *big_number) {
-    Node* current_node = big_number->first_digit;   
+void free_big_number(BigNumber big_number) {
+    Node current_node = big_number->first_digit;   
 
     while (current_node != NULL) {
-        Node* next_node = current_node->next_digit;
+        Node next_node = current_node->next_digit;
         free(current_node);
         current_node = next_node;
     }
@@ -124,8 +125,9 @@ void free_big_number(BigNumber *big_number) {
 * @return BigNumber result Resultado da operação.
 */
 
-BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
-    BigNumber* result = create_big_number("");
+BigNumber sum_big_numbers(BigNumber x, BigNumber y) {
+    BigNumber result = create_big_number("");
+    
 
     if (x->is_positive != y->is_positive) {
         int comparison_big_numbers_modules = compare_big_numbers_modules(x, y);
@@ -151,8 +153,8 @@ BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
             result->is_positive = true;
         }
 
-        Node* node_x = x->last_digit;
-        Node* node_y = y->last_digit;
+        Node node_x = x->last_digit;
+        Node node_y = y->last_digit;
 
         int carry_digit = 0;
 
@@ -202,16 +204,16 @@ BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
 * @return BigNumber result Resultado da operação.
 */
 
-BigNumber* subtraction_big_numbers(BigNumber *x, BigNumber *y) {
-    BigNumber* result = create_big_number("");
+BigNumber subtraction_big_numbers(BigNumber x, BigNumber y) {
+    BigNumber result = create_big_number("");
 
     if (x->is_positive != y->is_positive) {
         result = switch_to_sum_or_subtraction("sum", x->is_positive, x, y, result);
     }
 
     else {
-        Node* node_x = x->last_digit;
-        Node* node_y = y->last_digit;
+        Node node_x = x->last_digit;
+        Node node_y = y->last_digit;
 
         bool result_sign = determine_sign_in_subtraction(x, y);
         determine_order_of_subtraction(x, &node_x, y, &node_y, result);
