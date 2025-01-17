@@ -6,7 +6,7 @@
 char* read_input();
 void execute_program();
 
-void add_node_to_big_number(BigNumber *big_number, int digit);
+void add_node_to_big_number(BigNumber *big_number, int digit, bool insert_at_end);
 
 int get_big_number_length(BigNumber *big_number);
 int compare_big_numbers_modules(BigNumber *x, BigNumber *y);

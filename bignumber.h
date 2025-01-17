@@ -18,8 +18,10 @@ typedef struct BigNumber {
 BigNumber* create_big_number(char *str_number);
 BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y);
 BigNumber* subtraction_big_numbers(BigNumber *x, BigNumber *y);
-BigNumber* divide_big_numbers(BigNumber *x, BigNumber *y);
 BigNumber* multiply_big_numbers(BigNumber *x, BigNumber *y);
+BigNumber* divide_big_numbers(BigNumber *dividend, BigNumber *divisor);
+BigNumber* remainder_of_division(BigNumber *dividend, BigNumber *divisor);
+BigNumber* fast_exponentiation(BigNumber *base, BigNumber *exponent);
 
 void print_big_number(BigNumber *x);
 void free_big_number(BigNumber *x);

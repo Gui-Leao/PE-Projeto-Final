@@ -139,7 +139,7 @@ BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
         } 
         
         else {
-            add_node_to_big_number(result, 0);
+            add_node_to_big_number(result, 0, false);
             return result;
         }
     }
@@ -166,12 +166,14 @@ BigNumber* sum_big_numbers(BigNumber *x, BigNumber *y) {
             carry_digit = sum / 10;
             new_result_digit = sum % 10;
 
-            add_node_to_big_number(result, new_result_digit);
+            add_node_to_big_number(result, new_result_digit, false);
             
             if (node_x != NULL) node_x = node_x->prev_digit;
             if (node_y != NULL) node_y = node_y->prev_digit;
         }
     }
+
+    remove_zeros_from_left(result);
 
     return result;
 }
@@ -231,7 +233,7 @@ BigNumber* subtraction_big_numbers(BigNumber *x, BigNumber *y) {
                 borrow_digit = 0;
             }
 
-            add_node_to_big_number(result, subtraction);
+            add_node_to_big_number(result, subtraction, false);
 
             if (node_x != NULL) node_x = node_x->prev_digit;
             if (node_y != NULL) node_y = node_y->prev_digit;

@@ -87,22 +87,34 @@ void execute_program() {
 *
 * @param big_number Registro do tipo Big Number.
 * @param digit Número que representa o Nó a ser criado.
+* @param insert_at_end Indica se vamos adicionar o número no fim ou no começo do Big Number.
 *
 * @details A função atualiza os campos do Nó criado (dígito posterior e anterior),
 *          além alocar o novo Nó na primeira posição do Big Number.
 */
 
-void add_node_to_big_number(BigNumber *big_number, int digit) {
+void add_node_to_big_number(BigNumber *big_number, int digit, bool insert_at_end) {
     Node* new_node = (Node*)malloc(sizeof(Node));
 
-    new_node->digit = digit;
-    new_node->next_digit = big_number->first_digit;
-    new_node->prev_digit = NULL;
+    if (!insert_at_end) {
+        new_node->digit = digit;
+        new_node->next_digit = big_number->first_digit;
+        new_node->prev_digit = NULL;
 
-    if (big_number->first_digit == NULL) big_number->last_digit = new_node;
-    if (big_number->first_digit != NULL) big_number->first_digit->prev_digit = new_node;
-        
-    big_number->first_digit = new_node;
+        if (big_number->first_digit == NULL) big_number->last_digit = new_node;
+        if (big_number->first_digit != NULL) big_number->first_digit->prev_digit = new_node;
+            
+        big_number->first_digit = new_node;
+    } else {
+        new_node->digit = digit;
+        new_node->prev_digit = big_number->last_digit;
+        new_node->next_digit = NULL;
+
+        if (big_number->last_digit == NULL) big_number->first_digit = new_node;
+        if (big_number->last_digit != NULL) big_number->last_digit->next_digit = new_node;
+            
+        big_number->last_digit = new_node;       
+    }
 }
 
 
@@ -261,7 +273,7 @@ void determine_order_of_subtraction(BigNumber* x, Node** node_x, BigNumber* y, N
     }
 
     else if (comparison_big_numbers_modules == 0) {
-        add_node_to_big_number(result, 0);
+        add_node_to_big_number(result, 0, false);
         return;
     }
 }
