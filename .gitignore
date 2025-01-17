@@ -1,3 +1,6 @@
 .vscode/
 program
 program_out/
+auxiliar.o
+bignumber.o
+client.o
