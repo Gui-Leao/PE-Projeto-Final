@@ -5,6 +5,6 @@
 
 int main() {
     execute_program();
-
+    printf("Fim do programa!\n");
     return 0;
 }

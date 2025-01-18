@@ -69,8 +69,11 @@ void execute_program() {
             case '-':
                 result = subtraction_big_numbers(big_num1, big_num2);
                 break;
-	    case '/':
+            case '/':
                 result = divide_big_numbers(big_num1, big_num2);
+                break;
+            case '^':
+                result = fast_exponentiation(big_num1, big_num2);
                 break;
             default:
                 printf("Operacao nao conhecida\n");
@@ -119,6 +122,7 @@ void add_node_to_big_number(BigNumber big_number, int digit, bool insert_at_end)
 
         if (big_number->last_digit == NULL) big_number->first_digit = new_node;
         if (big_number->last_digit != NULL) big_number->last_digit->next_digit = new_node;
+        big_number->is_even = (digit % 2 == 0) ? true : false;
             
         big_number->last_digit = new_node;       
     }

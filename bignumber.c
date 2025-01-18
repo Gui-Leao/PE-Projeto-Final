@@ -57,7 +57,8 @@ BigNumber create_big_number(char *str_number) {
         add_node_to_big_number(big_number,digit,true);
         i++;
     }
-
+    
+    
     return big_number;
 }
 
@@ -77,8 +78,9 @@ void print_big_number(BigNumber big_number) {
         printf("%d", current_node->digit);
         current_node = current_node->next_digit;
     }
-
+    //is_even(big_number);
     printf("\n");
+    big_number->is_even?printf("é par\n"):printf("é impar");
 }
 
 
@@ -164,7 +166,7 @@ BigNumber sum_big_numbers(BigNumber x, BigNumber y) {
             if (node_y != NULL) node_y = node_y->prev_digit;
         }
     }
-
+    result->is_even = (result->last_digit->digit % 2 == 0) ? true : false;
     remove_zeros_from_left(result);
 
     return result;
@@ -232,6 +234,7 @@ BigNumber subtraction_big_numbers(BigNumber x, BigNumber y) {
         }
 
         result->is_positive = result_sign;
+        result->is_even = (result->last_digit->digit % 2 == 0) ? true : false;
     }
 
     remove_zeros_from_left(result);
@@ -262,10 +265,10 @@ BigNumber divide_big_numbers(BigNumber dividend, BigNumber divisor) {
         int count = 0;
         while (compare_big_numbers_modules(current_dividend, divisor) >= 0) {
             BigNumber update_current = subtraction_big_numbers(current_dividend, divisor);
-            
+
             free_big_number(current_dividend);
             current_dividend = update_current;
-           
+
             count++;
         }
 
@@ -277,6 +280,8 @@ BigNumber divide_big_numbers(BigNumber dividend, BigNumber divisor) {
 
     quocient->is_positive = result_sign;
     remove_zeros_from_left(quocient);
-    
+
     return quocient;
 }
+
+
