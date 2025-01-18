@@ -196,7 +196,12 @@ BigNumber sum_big_numbers(BigNumber x, BigNumber y) {
 
 BigNumber subtraction_big_numbers(BigNumber x, BigNumber y) {
     BigNumber result = create_big_number("");
-
+    printf("dentro da funcao : ");
+    print_big_number(x);
+    print_big_number(y);
+    printf("----");
+    printf("\n");
+    printf("num dig div : %d  \\ num dig divisor : %d\n",x->num_digits,y->num_digits);
     if (x->is_positive != y->is_positive) {
         result = switch_to_sum_or_subtraction("sum", x->is_positive, x, y, result);
     }
@@ -224,7 +229,7 @@ BigNumber subtraction_big_numbers(BigNumber x, BigNumber y) {
             } else {
                 borrow_digit = 0;
             }
-
+	    // printf("subtracao na funcao :%d",subtraction);
             add_node_to_big_number(result, subtraction, false);
 
             if (node_x != NULL) node_x = node_x->prev_digit;
@@ -238,3 +243,89 @@ BigNumber subtraction_big_numbers(BigNumber x, BigNumber y) {
 
     return result;
 }
+
+BigNumber divide_big_numbers(BigNumber dividend, BigNumber divisor) {
+    bool result_sign = true ? dividend->is_positive == divisor->is_positive : false;
+    printf("Dividendo: \n");
+    print_big_number(dividend);
+    printf("Divisor: \n");
+    print_big_number(divisor);
+    dividend->is_positive = true;
+    divisor->is_positive = true;
+
+    BigNumber quocient = create_big_number("");
+    BigNumber current_dividend = create_big_number("");
+
+    Node dividend_node = dividend->first_digit;
+
+    while (dividend_node != NULL) {
+        add_node_to_big_number(current_dividend, dividend_node->digit, true);
+        //remove_zeros_from_left(current_dividend);
+
+        if (divisor->first_digit->digit == 0 && divisor->first_digit == divisor->last_digit) {
+            add_node_to_big_number(quocient, 0, true);
+            return quocient;
+        }
+        //printf("atual dividendo : \n");
+        //print_big_number(current_dividend);
+        //printf("comparacao : %d\n",compare_big_numbers_modules(current_dividend, divisor));
+        //printf("numero de digitos do dividendo : %d || numero de digitos do divisor : %d\n",current_dividend->num_digits,divisor->num_digits);
+        //printf("subtracao : %d\n",subtraction_big_numbers(current_dividend, divisor));
+        //printf("fim\n");
+        int count = 0;
+        while (compare_big_numbers_modules(current_dividend, divisor) >= 0) {
+            BigNumber update_current = subtraction_big_numbers(current_dividend, divisor);
+            //print_big_number(update_current);
+            
+            if (count <=5){
+                printf("num dig div : %d  \\ num dig divisor : %d\n",current_dividend->num_digits,divisor->num_digits);
+            }
+            free_big_number(current_dividend);
+            current_dividend = update_current;
+            //printf("comparacao : %d\n",compare_big_numbers_modules(current_dividend, divisor));
+            printf("num de digitos do updated: %d\n",update_current->num_digits);
+            printf("Novo dividendo atual: ");
+            print_big_number(current_dividend);
+            printf("Num dígitos: %d\n", current_dividend->num_digits);
+            //current_dividend->num_digits = update_current->num_digits;
+            //printf("%d",count);
+            count++;
+        }
+
+        add_node_to_big_number(quocient, count, true);
+        dividend_node = dividend_node->next_digit;
+    }
+
+    free_big_number(current_dividend);
+
+    quocient->is_positive = result_sign;
+    remove_zeros_from_left(quocient);
+    //print_big_number(quocient);
+    return quocient;
+}
+
+// BigNumber remainder_of_division(BigNumber dividend, BigNumber divisor) {
+//     bool divisor_sign = divisor->is_positive;
+//     bool dividend_sign = dividend->is_positive;
+
+//     BigNumber quocient = divide_big_numbers(dividend, divisor);
+
+//     divisor->is_positive = divisor_sign;
+//     BigNumber quocient_times_divisor = multiply_big_numbers(quocient, divisor);
+
+//     dividend->is_positive = dividend_sign;
+//     BigNumber remainder = subtraction_big_numbers(dividend, quocient_times_divisor);
+
+//     if ((remainder->is_positive == false && divisor->is_positive == true) || 
+//         (remainder->is_positive == true && divisor->is_positive == false)) {
+//         BigNumber update_remainder = sum_big_numbers(remainder, divisor);
+
+//         free_big_number(remainder);
+//         remainder = update_remainder;
+//     }
+
+//     free_big_number(quocient);
+//     free_big_number(quocient_times_divisor);
+
+//     return remainder;
+// }

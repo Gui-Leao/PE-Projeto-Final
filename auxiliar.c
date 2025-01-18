@@ -69,6 +69,9 @@ void execute_program() {
             case '-':
                 result = subtraction_big_numbers(big_num1, big_num2);
                 break;
+	    case '/':
+                result = divide_big_numbers(big_num1, big_num2);
+                break;
             default:
                 printf("Operacao nao conhecida\n");
                 result = create_big_number("");
@@ -140,7 +143,7 @@ void add_node_to_big_number(BigNumber big_number, int digit, bool insert_at_end)
 int compare_big_numbers_modules(BigNumber x, BigNumber y) {
     int len_x = x->num_digits;
     int len_y = y->num_digits;
-
+    //printf("compara num digits : %d ||| %d\n",len_x,len_y);
     if (len_x > len_y) return 1;
     if (len_x < len_y) return -1;
 
@@ -278,6 +281,7 @@ void remove_zeros_from_left(BigNumber big_number) {
         big_number->first_digit->prev_digit = NULL;
 
         free(node_to_remove);
+        big_number->num_digits--;
     }
 
     if (big_number->first_digit == big_number->last_digit && big_number->first_digit->digit == 0) {
