@@ -143,7 +143,6 @@ void add_node_to_big_number(BigNumber big_number, int digit, bool insert_at_end)
 int compare_big_numbers_modules(BigNumber x, BigNumber y) {
     int len_x = x->num_digits;
     int len_y = y->num_digits;
-    //printf("compara num digits : %d ||| %d\n",len_x,len_y);
     if (len_x > len_y) return 1;
     if (len_x < len_y) return -1;
 
