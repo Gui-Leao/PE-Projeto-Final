@@ -72,8 +72,8 @@ void execute_program() {
             case '/':
                 result = divide_big_numbers(big_num1, big_num2);
                 break;
-            case '^':
-                result = fast_exponentiation(big_num1, big_num2);
+            case '*':
+                result = multiply_big_numbers(big_num1,big_num2);
                 break;
             default:
                 printf("Operacao nao conhecida\n");
