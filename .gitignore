@@ -4,3 +4,4 @@ program_out/
 auxiliar.o
 bignumber.o
 client.o
+client.exe

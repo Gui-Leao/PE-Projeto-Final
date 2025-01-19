@@ -80,7 +80,7 @@ void print_big_number(BigNumber big_number) {
     }
     //is_even(big_number);
     printf("\n");
-    big_number->is_even?printf("é par\n"):printf("é impar");
+    //big_number->is_even?printf("é par\n"):printf("é impar\n");
 }
 
 
@@ -282,6 +282,39 @@ BigNumber divide_big_numbers(BigNumber dividend, BigNumber divisor) {
     remove_zeros_from_left(quocient);
 
     return quocient;
+}
+
+BigNumber multiply_big_numbers(BigNumber x, BigNumber y) {
+    BigNumber result = create_big_number("");
+
+    bool result_sign = true ? x->is_positive == y->is_positive : false;
+    int result_length = x->num_digits + y->num_digits;
+
+    for (int i = 0; i < result_length; i++) {
+        add_node_to_big_number(result, 0, false);
+    }
+
+    Node result_extremity = result->last_digit;
+
+    for (Node i = x->last_digit; i; i = i->prev_digit) {
+        Node current_decimal_magnitude = result_extremity;
+
+        for (Node j = y->last_digit; j; j = j->prev_digit) {
+            int product = (i->digit * j->digit) + current_decimal_magnitude->digit;
+
+            current_decimal_magnitude->digit = product % 10;
+
+            current_decimal_magnitude = current_decimal_magnitude->prev_digit;
+            current_decimal_magnitude->digit += product / 10;
+        }
+
+        result_extremity = result_extremity->prev_digit;
+    }
+    
+    remove_zeros_from_left(result);
+    result->is_positive = result_sign;
+
+    return(result);
 }
 
 
