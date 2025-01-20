@@ -86,6 +86,10 @@ void execute_program() {
                 result = create_big_number("");
                 break;
         }
+        if (result == NULL) {
+            perror("Erro ao alocar memória");
+            exit(1);
+        }
 
         print_big_number(result);
 
@@ -296,4 +300,45 @@ void remove_zeros_from_left(BigNumber big_number) {
     if (big_number->first_digit == big_number->last_digit && big_number->first_digit->digit == 0) {
         big_number->is_positive = true;
     }
+}
+
+char* create_big_number_str(int num_digits) {
+    // Calcula o número de dígitos necessários
+    int length = snprintf(NULL, 0, "%d", num_digits);
+    
+    // Aloca memória dinamicamente para a string
+    char* num_digits_str = (char*)malloc((length + 1) * sizeof(char));
+    
+    if (num_digits_str == NULL) {
+        // Lida com erro de alocação de memória
+        perror("Erro ao alocar memória");
+        exit(1);
+    }
+
+    // Preenche a string com o valor de num_digits
+    snprintf(num_digits_str, length + 1, "%d", num_digits);
+
+    return num_digits_str;
+}
+
+void copy_big_number(BigNumber big_number_dest,BigNumber big_number_orig,int tam,bool in_left){
+
+
+    if (!in_left){
+        Node node_to_cpy = big_number_orig->first_digit;
+        for (int i = 0; i < tam ; i ++){
+            add_node_to_big_number(big_number_dest,node_to_cpy->digit,true);
+            node_to_cpy = node_to_cpy->next_digit;
+        }
+    }
+    else {
+        Node node_to_cpy = big_number_orig->last_digit;
+        for (int i = 0; i < tam ; i ++){
+            add_node_to_big_number(big_number_dest,node_to_cpy->digit,false);
+            node_to_cpy = node_to_cpy->prev_digit;
+        }        
+
+    }
+    //printf("terminou aqui\n");
+
 }

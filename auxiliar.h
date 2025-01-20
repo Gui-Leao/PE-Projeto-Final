@@ -16,6 +16,7 @@ BigNumber switch_to_sum_or_subtraction(char *switch_to, bool sign, BigNumber x, 
 bool determine_sign_in_subtraction(BigNumber x, BigNumber y);
 void determine_order_of_subtraction(BigNumber x, Node* node_x, BigNumber y, Node* node_y, BigNumber result);
 void remove_zeros_from_left(BigNumber big_number);
-
+char* create_big_number_str(int num_digits);
+void copy_big_number(BigNumber big_number_dest,BigNumber big_number_orig,int tam,bool in_left);
 
 #endif
