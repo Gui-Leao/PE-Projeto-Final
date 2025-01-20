@@ -78,6 +78,9 @@ void execute_program() {
             case '^':
                 result = fast_exponentiation(big_num1, big_num2);
                 break;
+            case ']':
+                result = multiply_karatsuba_big_numbers(big_num1,big_num2);
+                break;
             default:
                 printf("Operacao nao conhecida\n");
                 result = create_big_number("");

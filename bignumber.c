@@ -353,6 +353,67 @@ BigNumber fast_exponentiation(BigNumber base, BigNumber exponent) {
     return NULL;
 }
 
+void copy_big_number(BigNumber big_number_dest,BigNumber big_number_orig,int tam,bool invert){
+    if (!invert){
+        Node node_to_cpy = big_number_orig->first_digit;
+        for (int i = 0; i < tam ; i ++){
+            add_node_to_big_number(big_number_dest,node_to_cpy->digit,false);
+            node_to_cpy = node_to_cpy->next_digit;
+        }
+    }
+    else {
+        Node node_to_cpy = big_number_orig->last_digit;
+        for (int i = 0; i < tam ; i ++){
+            add_node_to_big_number(big_number_dest,node_to_cpy->digit,false);
+            node_to_cpy = node_to_cpy->prev_digit;
+        }        
+
+    }
+
+}
+
+BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
+    BigNumber result = create_big_number(""); 
+
+    //caso base para quando o big number tiver apenas um digito
+    if (x->num_digits == 1 && y->num_digits == 1){
+        int product = x->first_digit->digit * y->first_digit->digit;
+        add_node_to_big_number(result,product,true);
+    }
+    else{
+        printf("Numero de digitos : %d\n", x->num_digits/2);
+
+        BigNumber x_left = create_big_number("");
+        BigNumber x_right = create_big_number("");
+        BigNumber y_left = create_big_number("");
+        BigNumber y_right = create_big_number("");
+
+        BigNumber a = create_big_number("");
+        
+        copy_big_number(x_left,x,x->num_digits/2,false);
+        copy_big_number(x_right,x,x->num_digits/2,true);
+        copy_big_number(y_left,y,y->num_digits/2,false);
+        copy_big_number(y_right,y,y->num_digits/2,false);
+
+
+        // BigNumber a = multiply_karatsuba_big_numbers(x_left,y_left);
+        // BigNumber a = multiply_karatsuba_big_numbers(x_left,y_left);
+        // BigNumber a = multiply_karatsuba_big_numbers(x_left,y_left);
+        add_node_to_big_number(result,0,true);
+
+    }
+
+    return result;
+
+    // a = x_left*y_left 
+    // b = y_rigth*x_right
+    // d = (x_right*y_left +y_left*x_right)
+    // c = (x_left + x_rigth) * (y_left + y_right)
+    // d = c - a - b
+    // a * 10^n + d * 10 ^(n/2) + b
+
+
+}
 
 
 
