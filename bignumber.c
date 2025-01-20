@@ -317,4 +317,42 @@ BigNumber multiply_big_numbers(BigNumber x, BigNumber y) {
     return(result);
 }
 
+BigNumber fast_exponentiation(BigNumber base, BigNumber exponent) {
+    if (exponent->first_digit->digit == 0 && exponent->first_digit == exponent->last_digit) {
+        BigNumber result = create_big_number("");
+        add_node_to_big_number(result, 1, true);
+        return result;
+    } 
+    
+    else if (exponent->is_even){
+        BigNumber two = create_big_number("2");
+        BigNumber exponent_divided_by_2 = divide_big_numbers(exponent, two);
+        BigNumber half_power = fast_exponentiation(base, exponent_divided_by_2);
+        BigNumber result = multiply_big_numbers(half_power, half_power);
+
+        free_big_number(two);
+        free_big_number(exponent_divided_by_2);
+        free_big_number(half_power);
+
+        return result;
+    } 
+    
+    else if (!exponent->is_even) {
+        BigNumber one = create_big_number("1");
+        BigNumber exponent_minus_1 = subtraction_big_numbers(exponent, one);
+        BigNumber partial_result = fast_exponentiation(base, exponent_minus_1);
+        BigNumber result = multiply_big_numbers(base, partial_result);
+
+        free_big_number(one);
+        free_big_number(exponent_minus_1);
+        free_big_number(partial_result);
+
+        return result;
+    }
+
+    return NULL;
+}
+
+
+
 
