@@ -357,7 +357,7 @@ void copy_big_number(BigNumber big_number_dest,BigNumber big_number_orig,int tam
     if (!invert){
         Node node_to_cpy = big_number_orig->first_digit;
         for (int i = 0; i < tam ; i ++){
-            add_node_to_big_number(big_number_dest,node_to_cpy->digit,false);
+            add_node_to_big_number(big_number_dest,node_to_cpy->digit,true);
             node_to_cpy = node_to_cpy->next_digit;
         }
     }
@@ -372,16 +372,37 @@ void copy_big_number(BigNumber big_number_dest,BigNumber big_number_orig,int tam
 
 }
 
+char* create_big_number_str(int num_digits) {
+    // Calcula o número de dígitos necessários
+    int length = snprintf(NULL, 0, "%d", num_digits);
+    
+    // Aloca memória dinamicamente para a string
+    char* num_digits_str = (char*)malloc((length + 1) * sizeof(char));
+    
+    if (num_digits_str == NULL) {
+        // Lida com erro de alocação de memória
+        perror("Erro ao alocar memória");
+        exit(1);
+    }
+
+    // Preenche a string com o valor de num_digits
+    snprintf(num_digits_str, length + 1, "%d", num_digits);
+
+    return num_digits_str;
+}
+
 BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
     BigNumber result = create_big_number(""); 
 
     //caso base para quando o big number tiver apenas um digito
     if (x->num_digits == 1 && y->num_digits == 1){
-        int product = x->first_digit->digit * y->first_digit->digit;
-        add_node_to_big_number(result,product,true);
+        result = multiply_big_numbers(x,y);
+        printf("mostrando o resultado: ");
+        print_big_number(result);
+        printf("\n");
     }
     else{
-        printf("Numero de digitos : %d\n", x->num_digits/2);
+        //printf("Numero de digitos : %d\n", x->num_digits/2);
 
         BigNumber x_left = create_big_number("");
         BigNumber x_right = create_big_number("");
@@ -389,20 +410,79 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         BigNumber y_right = create_big_number("");
 
         BigNumber a = create_big_number("");
+        BigNumber b = create_big_number("");
+        BigNumber c = create_big_number("");
+        BigNumber d = create_big_number("");
+
         
-        copy_big_number(x_left,x,x->num_digits/2,false);
-        copy_big_number(x_right,x,x->num_digits/2,true);
-        copy_big_number(y_left,y,y->num_digits/2,false);
-        copy_big_number(y_right,y,y->num_digits/2,false);
+        copy_big_number(x_left,x,(x->num_digits/2)%10,false);
+        copy_big_number(x_right,x,(x->num_digits/2)%10,true);
+        copy_big_number(y_left,y,(y->num_digits/2)%10,false);
+        copy_big_number(y_right,y,(y->num_digits/2)%10,true);
 
+        printf("*************************\n");
+        print_big_number(x_left);
+        print_big_number(x_right);
+        print_big_number(y_left);
+        print_big_number(y_right);
+        printf("*************************\n");
 
-        // BigNumber a = multiply_karatsuba_big_numbers(x_left,y_left);
-        // BigNumber a = multiply_karatsuba_big_numbers(x_left,y_left);
-        // BigNumber a = multiply_karatsuba_big_numbers(x_left,y_left);
-        add_node_to_big_number(result,0,true);
+        a = multiply_karatsuba_big_numbers(x_left,y_left);
+        b = multiply_karatsuba_big_numbers(x_right,y_right);
+        c = multiply_karatsuba_big_numbers(sum_big_numbers(x_right,x_left),sum_big_numbers(y_right,y_left));
+        d = subtraction_big_numbers(c,a);
+        d = subtraction_big_numbers(d,b);
+
+        printf("imprimindo a : ");
+        print_big_number(a);
+        printf("\n");
+
+        printf("imprimindo b : ");
+        print_big_number(b);
+        printf("\n");
+
+        printf("imprimindo c : ");
+        print_big_number(c);
+        printf("\n");
+
+        printf("imprimindo d : ");
+        print_big_number(d);
+        printf("\n");
+
+        BigNumber base_ten = create_big_number("10");
+        //print_big_number(base_ten);
+        char* num_digits_str = create_big_number_str(x->num_digits);
+        BigNumber exponent = create_big_number(num_digits_str);
+
+        result = multiply_big_numbers(a,fast_exponentiation(base_ten,exponent));
+        printf("Resultado primeira parte: ");
+        print_big_number(result);
+        printf("\n");
+        free(num_digits_str);
+        free_big_number(exponent);
+        num_digits_str = create_big_number_str((x->num_digits/2)%10);
+        exponent = create_big_number(num_digits_str);
+        
+        result = sum_big_numbers(result,multiply_big_numbers(d,fast_exponentiation(base_ten,exponent)));
+        printf("Resultado segunda parte: ");
+        print_big_number(result);
+        printf("\n");
+        result = sum_big_numbers(result,b);
+        printf("Resultado terceira parte: ");
+        print_big_number(result);
+        printf("\n");
+        //print_big_number(exponent);
+        // base_ten = fast_exponentiation(base_ten,x->num_digits);
+
+        
+        // result = multiply_big_numbers(a,base_ten);
+        // free_big_number(base)
+        // result = sum
+        //add_node_to_big_number(result,0,true); 
 
     }
 
+    printf("--------------------------\n");
     return result;
 
     // a = x_left*y_left 
