@@ -317,6 +317,40 @@ BigNumber multiply_big_numbers(BigNumber x, BigNumber y) {
     return(result);
 }
 
+BigNumber fast_exponentiation_norecursion(BigNumber base, BigNumber exponent){
+    BigNumber result = create_big_number("1");
+    
+    while (!(exponent->first_digit->digit == 0 && exponent->first_digit == exponent->last_digit)){
+        if (exponent->is_even){
+
+            BigNumber two = create_big_number("2");
+            base = multiply_big_numbers(base,base);
+            exponent = divide_big_numbers(exponent, two);
+
+            free_big_number(two);
+            // free_big_number(exponent_divided_by_2);
+            // free_big_number(half_power);
+
+        }
+        else if (!exponent->is_even){
+            
+            BigNumber one = create_big_number("1");
+            result = multiply_big_numbers(result,base);
+            exponent = subtraction_big_numbers(exponent,one);
+            // BigNumber exponent_minus_1 = subtraction_big_numbers(exponent, one);
+            // BigNumber partial_result = fast_exponentiation(base, exponent_minus_1);
+            // BigNumber result = multiply_big_numbers(base, partial_result);
+
+            free_big_number(one);
+            // free_big_number(exponent_minus_1);
+            // free_big_number(partial_result);
+
+            
+        }
+    }
+    return result;
+}
+
 BigNumber fast_exponentiation(BigNumber base, BigNumber exponent) {
     if (exponent->first_digit->digit == 0 && exponent->first_digit == exponent->last_digit) {
         BigNumber result = create_big_number("");
@@ -353,6 +387,33 @@ BigNumber fast_exponentiation(BigNumber base, BigNumber exponent) {
     return NULL;
 }
 
+BigNumber remainder_of_division(BigNumber dividend, BigNumber divisor) {
+    bool divisor_sign = divisor->is_positive;
+    bool dividend_sign = dividend->is_positive;
+
+    BigNumber quocient = divide_big_numbers(dividend, divisor);
+
+    divisor->is_positive = divisor_sign;
+    BigNumber quocient_times_divisor = multiply_big_numbers(quocient, divisor);
+
+    dividend->is_positive = dividend_sign;
+    BigNumber remainder = subtraction_big_numbers(dividend, quocient_times_divisor);
+
+    if ((remainder->is_positive == false && divisor->is_positive == true) || 
+        (remainder->is_positive == true && divisor->is_positive == false)) {
+        BigNumber update_remainder = sum_big_numbers(remainder, divisor);
+
+        free_big_number(remainder);
+        remainder = update_remainder;
+    }
+
+    free_big_number(quocient);
+    free_big_number(quocient_times_divisor);
+
+    return remainder;
+}
+
+
 BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
     BigNumber result = create_big_number(""); 
 
@@ -361,18 +422,19 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         result = multiply_big_numbers(x,y);
         // printf("mostrando o resultado: \n");
         // print_big_number(result);
-        //printf("\n");
+        // printf("\n");
     }
     else{
         int tam = (x->num_digits>y->num_digits)?x->num_digits:y->num_digits;
         int half = tam / 2;
+        int half_left = tam - half;
         // printf("tamanho : %d\n",tam);
         // printf("tamanho metade : %d\n",half);
         BigNumber base_ten = create_big_number("10");
         //print_big_number(base_ten);
         char* num_digits_str = create_big_number_str(half);
         BigNumber exponent = create_big_number(num_digits_str);
-        //printf("Numero de digitos : %d\n", x->num_digits/2);
+        // printf("Numero de digitos : %d\n", x->num_digits/2);
 
         BigNumber x_left = create_big_number("");
         BigNumber x_right = create_big_number("");
@@ -383,24 +445,31 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         BigNumber b = create_big_number("");
         BigNumber c = create_big_number("");
         BigNumber d = create_big_number("");
-        int half_right = tam / 2;
-        //int half_left = tam - half_right;
+        // int half_right = tam / 2;
+        // int half_left = tam - half_right;
 
        
 
-
-        x_left = divide_big_numbers(x,fast_exponentiation(base_ten,exponent));
-        copy_big_number(x_right,x,half_right,true);
+        // copy_big_number(x_left,x,half_left,false);
+        // copy_big_number(x_right,x,half,true);
+        // copy_big_number(y_left,y,half_left,false);
+        // copy_big_number(y_right,y,half,true);
+        x_left = divide_big_numbers(x,fast_exponentiation_norecursion(base_ten,exponent));
+        x_right = remainder_of_division(x,fast_exponentiation_norecursion(base_ten,exponent));
         //copy_big_number(y_left,y,tam,false);
-        y_left = divide_big_numbers(y,fast_exponentiation(base_ten,exponent));
-        copy_big_number(y_right,y,half_right,true);
+        y_left = divide_big_numbers(y,fast_exponentiation_norecursion(base_ten,exponent));
+        y_right= remainder_of_division(y,fast_exponentiation_norecursion(base_ten,exponent));
         // printf("veio auqizn\n");
 
         // printf("*************************\n");
         // print_big_number(x_left);
+        // //printf("Numero de digitos : %d\n",x_left->num_digits);
         // print_big_number(x_right);
+        // //printf("Numero de digitos : %d\n",x_right->num_digits);
         // print_big_number(y_left);
+        // //printf("Numero de digitos : %d\n",y_left->num_digits);
         // print_big_number(y_right);
+        // //printf("Numero de digitos : %d\n",y_right->num_digits);
         // printf("*************************\n");
 
         a = multiply_karatsuba_big_numbers(x_left,y_left);
@@ -426,12 +495,13 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         // printf("\n");
 
 
+
         free(num_digits_str);
         free_big_number(exponent);
-        num_digits_str = create_big_number_str(tam);
+        num_digits_str = create_big_number_str(tam % 2 == 0 ? tam:tam-1);
         exponent = create_big_number(num_digits_str);
 
-        result = multiply_big_numbers(a,fast_exponentiation(base_ten,exponent));
+        result = multiply_big_numbers(a,fast_exponentiation_norecursion(base_ten,exponent));
         // printf("Resultado primeira parte: ");
         // print_big_number(result);
         // printf("\n");
@@ -440,7 +510,7 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         num_digits_str = create_big_number_str(half);
         exponent = create_big_number(num_digits_str);
         
-        result = sum_big_numbers(result,multiply_big_numbers(d,fast_exponentiation(base_ten,exponent)));
+        result = sum_big_numbers(result,multiply_big_numbers(d,fast_exponentiation_norecursion(base_ten,exponent)));
         // printf("Resultado segunda parte: ");
         // print_big_number(result);
         // printf("\n");
@@ -456,10 +526,20 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         // free_big_number(base)
         // result = sum
         //add_node_to_big_number(result,0,true); 
+        free_big_number(a);
+        free_big_number(b);
+        free_big_number(c);
+        free_big_number(d);
+        free_big_number(base_ten);
+        free_big_number(x_left);
+        free_big_number(x_right);
+        free_big_number(y_left);
+        free_big_number(y_right);
+        free_big_number(exponent);
 
     }
 
-    //printf("--------------------------\n");
+    //printf("-----------------------------------------------------------\n");
     return result;
 
     // a = x_left*y_left 
