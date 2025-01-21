@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "auxiliar.h"
 #include "bignumber.h"
+#include <math.h>
 
 
 /* 
@@ -416,18 +417,26 @@ BigNumber remainder_of_division(BigNumber dividend, BigNumber divisor) {
 
 BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
     BigNumber result = create_big_number(""); 
+    bool result_sign = true ? x->is_positive == y->is_positive : false;
+    
+   // printf("numero de digitos :%d||| %d\n", x->num_digits,y->num_digits);
 
     //caso base para quando o big number tiver apenas um digito
-    if (x->num_digits == 1 && y->num_digits == 1){
+    if (x->num_digits <=  3 && y->num_digits <=  3){
+        x->is_positive = true;
+        y->is_positive = true;
         result = multiply_big_numbers(x,y);
         // printf("mostrando o resultado: \n");
         // print_big_number(result);
         // printf("\n");
     }
     else{
+        x->is_positive = true;
+        y->is_positive = true;
         int tam = (x->num_digits>y->num_digits)?x->num_digits:y->num_digits;
-        int half = tam / 2;
-        int half_left = tam - half;
+        int half = ceil((double) tam / 2);
+        //int half_left = tam - half;
+        //printf("half : %d",half);
         // printf("tamanho : %d\n",tam);
         // printf("tamanho metade : %d\n",half);
         BigNumber base_ten = create_big_number("10");
@@ -445,8 +454,6 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         BigNumber b = create_big_number("");
         BigNumber c = create_big_number("");
         BigNumber d = create_big_number("");
-        // int half_right = tam / 2;
-        // int half_left = tam - half_right;
 
        
 
@@ -454,11 +461,17 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         // copy_big_number(x_right,x,half,true);
         // copy_big_number(y_left,y,half_left,false);
         // copy_big_number(y_right,y,half,true);
-        x_left = divide_big_numbers(x,fast_exponentiation_norecursion(base_ten,exponent));
-        x_right = remainder_of_division(x,fast_exponentiation_norecursion(base_ten,exponent));
+        int count = 1;
+        while (count < half){
+            add_node_to_big_number(base_ten,0,true);
+            count++;
+        }
+        //print_big_number(base_ten);
+        x_left = divide_big_numbers(x,base_ten);
+        x_right = remainder_of_division(x,base_ten);
         //copy_big_number(y_left,y,tam,false);
-        y_left = divide_big_numbers(y,fast_exponentiation_norecursion(base_ten,exponent));
-        y_right= remainder_of_division(y,fast_exponentiation_norecursion(base_ten,exponent));
+        y_left = divide_big_numbers(y,base_ten);
+        y_right= remainder_of_division(y,base_ten);
         // printf("veio auqizn\n");
 
         // printf("*************************\n");
@@ -495,22 +508,41 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         // printf("\n");
 
 
+        count = 0;
+        while (count < half * 2){
+            add_node_to_big_number(a,0,true);
+            if ( count < half){
+                add_node_to_big_number(d,0,true);
+            }
+            count++;
+        }
+        
+        // count = 0;
+        // while (count < half){
+        //     add_node_to_big_number(d,0,true);
+        //     count++;
+        // }
+        
+        result = d;
 
-        free(num_digits_str);
-        free_big_number(exponent);
-        num_digits_str = create_big_number_str(tam % 2 == 0 ? tam:tam-1);
-        exponent = create_big_number(num_digits_str);
 
-        result = multiply_big_numbers(a,fast_exponentiation_norecursion(base_ten,exponent));
+
+
+        // free(num_digits_str);
+        // free_big_number(exponent);
+        // num_digits_str = create_big_number_str(half*2);
+        // exponent = create_big_number(num_digits_str);
+
+        // while (count < half*2){
+        //     add_node_to_big_number(base_ten,0,true);
+        //     count++;
+        // }
+
+
+        result = sum_big_numbers(result,a);
         // printf("Resultado primeira parte: ");
         // print_big_number(result);
         // printf("\n");
-        free(num_digits_str);
-        free_big_number(exponent);
-        num_digits_str = create_big_number_str(half);
-        exponent = create_big_number(num_digits_str);
-        
-        result = sum_big_numbers(result,multiply_big_numbers(d,fast_exponentiation_norecursion(base_ten,exponent)));
         // printf("Resultado segunda parte: ");
         // print_big_number(result);
         // printf("\n");
@@ -540,6 +572,7 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
     }
 
     //printf("-----------------------------------------------------------\n");
+    result->is_positive = result_sign;
     return result;
 
     // a = x_left*y_left 

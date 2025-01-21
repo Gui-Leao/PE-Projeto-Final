@@ -72,14 +72,19 @@ void execute_program() {
             case '/':
                 result = divide_big_numbers(big_num1, big_num2);
                 break;
-            case '*':
+            case ']':
                 result = multiply_big_numbers(big_num1,big_num2);
                 break;
             case '^':
                 result = fast_exponentiation(big_num1, big_num2);
                 break;
-            case ']':
+            case '*':
                 result = multiply_karatsuba_big_numbers(big_num1,big_num2);
+                //result->is_positive = false;
+                //bool result_sign = big_num1->is_positive != big_num2->is_positive ? false : true;
+                //result->is_positive = result_sign;
+                //printf("bgnum1 : %d,bgnum2 : %d, sinal : %d\n",big_num1->is_positive ,big_num2->is_positive, result_sign);
+                
                 break;
             case ';':
                 result = fast_exponentiation_norecursion(big_num1,big_num2);
