@@ -414,6 +414,55 @@ BigNumber remainder_of_division(BigNumber dividend, BigNumber divisor) {
     return remainder;
 }
 
+BigNumber divide_by_power_of_ten(BigNumber x, int power) {
+    BigNumber result = create_big_number("");
+
+    if (power >= x->num_digits) {
+        add_node_to_big_number(result, 0, true);
+        return result;
+    }
+
+    Node current = x->first_digit;
+    int count = 0;
+
+    while (count < x->num_digits - power) {
+        add_node_to_big_number(result, current->digit, true);
+        current = current->next_digit;
+        count++;
+    }
+    
+    result->num_digits = x->num_digits - power;
+
+    return result;
+}
+
+BigNumber get_remainder_by_power_of_ten(BigNumber x, int power) {
+    BigNumber result = create_big_number("");
+
+    if (power >= x->num_digits) {
+        copy_big_number(result, x, x->num_digits, false);
+        return result;
+    }
+
+    Node current = x->first_digit;
+    int count = 0;
+
+    while (count < x->num_digits - power) {
+        current = current->next_digit;
+        count++;
+    }
+
+    while (current != NULL) {
+        add_node_to_big_number(result, current->digit, true);
+        current = current->next_digit;
+    }
+
+    result->is_positive = x->is_positive;
+    result->num_digits = power;
+
+    return result;
+}
+
 
 BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
     BigNumber result = create_big_number(""); 
@@ -439,10 +488,10 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         //printf("half : %d",half);
         // printf("tamanho : %d\n",tam);
         // printf("tamanho metade : %d\n",half);
-        BigNumber base_ten = create_big_number("10");
+        //BigNumber base_ten = create_big_number("10");
         //print_big_number(base_ten);
-        char* num_digits_str = create_big_number_str(half);
-        BigNumber exponent = create_big_number(num_digits_str);
+        //char* num_digits_str = create_big_number_str(half);
+        //BigNumber exponent = create_big_number(num_digits_str);
         // printf("Numero de digitos : %d\n", x->num_digits/2);
 
         BigNumber x_left = create_big_number("");
@@ -456,23 +505,32 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         BigNumber d = create_big_number("");
 
        
+        x_left = divide_by_power_of_ten(x,half);
+        x_right = get_remainder_by_power_of_ten(x, half);
+        y_left = divide_by_power_of_ten(y, half);
+        y_right = get_remainder_by_power_of_ten(y, half);
+        // x_left = divide_big_numbers(x, base_ten);
+        // x_right = remainder_of_division(x, base_ten);
+
+        // y_left = divide_big_numbers(y, base_ten);
+        // y_right = remainder_of_division(y, base_ten);
 
         // copy_big_number(x_left,x,half_left,false);
         // copy_big_number(x_right,x,half,true);
         // copy_big_number(y_left,y,half_left,false);
         // copy_big_number(y_right,y,half,true);
-        int count = 1;
-        while (count < half){
-            add_node_to_big_number(base_ten,0,true);
-            count++;
-        }
-        //print_big_number(base_ten);
-        x_left = divide_big_numbers(x,base_ten);
-        x_right = remainder_of_division(x,base_ten);
-        //copy_big_number(y_left,y,tam,false);
-        y_left = divide_big_numbers(y,base_ten);
-        y_right= remainder_of_division(y,base_ten);
-        // printf("veio auqizn\n");
+        // int count = 1;
+        // while (count < half){
+        //     add_node_to_big_number(base_ten,0,true);
+        //     count++;
+        // }
+        // //print_big_number(base_ten);
+        // x_left = divide_big_numbers(x,base_ten);
+        // x_right = remainder_of_division(x,base_ten);
+        // //copy_big_number(y_left,y,tam,false);
+        // y_left = divide_big_numbers(y,base_ten);
+        // y_right= remainder_of_division(y,base_ten);
+        // // printf("veio auqizn\n");
 
         // printf("*************************\n");
         // print_big_number(x_left);
@@ -508,7 +566,7 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         // printf("\n");
 
 
-        count = 0;
+        int count = 0;
         while (count < half * 2){
             add_node_to_big_number(a,0,true);
             if ( count < half){
@@ -562,12 +620,12 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         free_big_number(b);
         free_big_number(c);
         free_big_number(d);
-        free_big_number(base_ten);
+        //free_big_number(base_ten);
         free_big_number(x_left);
         free_big_number(x_right);
         free_big_number(y_left);
         free_big_number(y_right);
-        free_big_number(exponent);
+        //free_big_number(exponent);
 
     }
 
