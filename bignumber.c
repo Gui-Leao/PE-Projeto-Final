@@ -5,14 +5,15 @@
 #include <math.h>
 
 
-/* 
+/*
 * @brief Cria um Nó.
 *
 * @param digit Dígito do Nó.
-* @return O Nó criado.
 *
 * @details A função inicializa o Nó apenas com o dígito, sem nenhuma ligação com algum Nó
 *          posterior ou anterior.
+*
+* @return O Nó criado.
 */
 
 Node create_node(int digit) {
@@ -26,15 +27,16 @@ Node create_node(int digit) {
 }
 
 
-/* 
+/*
 * @brief Cria um Big Number.
 *
 * @param str_number String do número.
-* @return O Big Number criado.
 *
 * @details A função adiciona cada Nó a medida que lê cada dígito da string, ou seja, a cada
 *          iteração, um novo Nó é adicionado ao final do Big Number. Cada dígito lido da
 *          string é convertido em inteiro, antes de ser usado para a criação de um Nó.
+*
+* @return O Big Number criado.
 */
 
 BigNumber create_big_number(char *str_number) {
@@ -54,17 +56,17 @@ BigNumber create_big_number(char *str_number) {
 
     while (str_number[i] != '\0') {
         int digit = str_number[i] - '0';
-        
+
         add_node_to_big_number(big_number,digit,true);
         i++;
     }
-    
-    
+
+
     return big_number;
 }
 
 
-/* 
+/*
 * @brief Realiza o print de um Big Number.
 *
 * @param big_number Big Number a ser printado.
@@ -85,14 +87,14 @@ void print_big_number(BigNumber big_number) {
 }
 
 
-/* 
+/*
 * @brief Libera a memória alocada pelo Big Number.
 *
 * @param big_number Big Number a ser liberado da memória.
 */
 
 void free_big_number(BigNumber big_number) {
-    Node current_node = big_number->first_digit;   
+    Node current_node = big_number->first_digit;
 
     while (current_node != NULL) {
         Node next_node = current_node->next_digit;
@@ -104,7 +106,7 @@ void free_big_number(BigNumber big_number) {
 }
 
 
-/* 
+/*
 * @brief Realiza a soma entre dois Big Numbers.
 *
 * @param x Big Number a ser somado.
@@ -112,8 +114,8 @@ void free_big_number(BigNumber big_number) {
 *
 * @details A função faz, primeiramente, a validação de sinais da operação. Se observado
 *          sinais diferentes entre os dois números, a função de subtração é acionada.
-*          Caso a soma seja de fato realizada, é iniciado a partir do último Nó dos 
-*          Big Numbers, e só finaliza quando não há mais nenhum Nó, tanto do Big Number x, 
+*          Caso a soma seja de fato realizada, é iniciado a partir do último Nó dos
+*          Big Numbers, e só finaliza quando não há mais nenhum Nó, tanto do Big Number x,
 *          ou do Big Number y, além de não precisar somar o dígito de transporte.
 *
 * @return BigNumber result Resultado da operação.
@@ -121,25 +123,25 @@ void free_big_number(BigNumber big_number) {
 
 BigNumber sum_big_numbers(BigNumber x, BigNumber y) {
     BigNumber result = create_big_number("");
-    
+
 
     if (x->is_positive != y->is_positive) {
         int comparison_big_numbers_modules = compare_big_numbers_modules(x, y);
-        
+
         if (comparison_big_numbers_modules == 1) {
             result = switch_to_sum_or_subtraction("sub", x->is_positive, x, y, result);
         }
-        
+
         else if (comparison_big_numbers_modules == -1) {
-            result = switch_to_sum_or_subtraction("sub", y->is_positive, y, x, result);  
-        } 
-        
+            result = switch_to_sum_or_subtraction("sub", y->is_positive, y, x, result);
+        }
+
         else {
             add_node_to_big_number(result, 0, false);
             return result;
         }
     }
-    
+
     else {
         if (x->is_positive == false && y->is_positive == false) {
             result->is_positive = false;
@@ -162,7 +164,7 @@ BigNumber sum_big_numbers(BigNumber x, BigNumber y) {
             carry_digit = sum / 10;
             new_result_digit = sum % 10;
             add_node_to_big_number(result, new_result_digit, false);
-            
+
             if (node_x != NULL) node_x = node_x->prev_digit;
             if (node_y != NULL) node_y = node_y->prev_digit;
         }
@@ -174,7 +176,7 @@ BigNumber sum_big_numbers(BigNumber x, BigNumber y) {
 }
 
 
-/* 
+/*
 * @brief Realiza a subtração entre dois Big Numbers.
 *
 * @param x Big Number a ser subtraído.
@@ -184,15 +186,15 @@ BigNumber sum_big_numbers(BigNumber x, BigNumber y) {
 *          para que, dessa forma, a função de soma seja acionada. O resultado dessa soma
 *          será determinado olhando para x, já que, se possuem sinais diferentes, a subtração
 *          irá inverter o sinal de y, logo, quando x é positivo, temos y negativo, resultando
-*          em uma subtração do tipo x - (-y) = x + y (uma soma com sinal positivo). 
-*          Quando x é negativo, temos y positivo, resultando em uma subtração do tipo 
+*          em uma subtração do tipo x - (-y) = x + y (uma soma com sinal positivo).
+*          Quando x é negativo, temos y positivo, resultando em uma subtração do tipo
 *          -x - (y) = -x - y (uma soma com sinal negativo).
 *
 *          Quando a subtração é de fato acionada (dois números com mesmo sinal).
 *          O sinal do resultado é determinado a partir dos valores da operação, além de
 *          rearranjar a ordem da subtração, colocando o Big Number de maior valor em primeiro,
 *          se necessário. A operação de subtração é feita dígito a dígito, verificando a necessidade
-*          de empréstimo quando necessário, além de subtrair esse empréstimo na próxima iteração.       
+*          de empréstimo quando necessário, além de subtrair esse empréstimo na próxima iteração.
 *
 * @return BigNumber result Resultado da operação.
 */
@@ -218,7 +220,7 @@ BigNumber subtraction_big_numbers(BigNumber x, BigNumber y) {
 
             digit_x = (node_x != NULL) ? node_x->digit : 0;
             digit_y = (node_y != NULL) ? node_y->digit : 0;
-        
+
             subtraction = digit_x - digit_y - borrow_digit;
 
             if (subtraction < 0) {
@@ -242,6 +244,22 @@ BigNumber subtraction_big_numbers(BigNumber x, BigNumber y) {
 
     return result;
 }
+
+
+/*
+* @brief Divide dois Big Numbers.
+*
+* @param dividend Big Number que será dividido.
+* @param divisor Big Number que será usado como divisor.
+*
+* @details A função realiza a divisão de dois Big Numbers utilizando um método similar
+*          ao da divisão longa. Para cada dígito do dividendo, é verificado quantas
+*          vezes o divisor cabe no valor parcial. O resultado é acumulado no quociente.
+*          A função também valida divisões por zero e ajusta o sinal do resultado
+*          com base nos sinais do dividendo e divisor.
+*
+* @return Big Number quociente da divisão.
+*/
 
 BigNumber divide_big_numbers(BigNumber dividend, BigNumber divisor) {
     bool result_sign = true ? dividend->is_positive == divisor->is_positive : false;
@@ -285,6 +303,21 @@ BigNumber divide_big_numbers(BigNumber dividend, BigNumber divisor) {
     return quocient;
 }
 
+
+/*
+* @brief Multiplica dois Big Numbers.
+*
+* @param x Big Number a ser multiplicado.
+* @param y Big Number a ser multiplicado.
+*
+* @details A função realiza a multiplicação de dois Big Numbers utilizando o algoritmo
+*          tradicional de multiplicação. Cada dígito do primeiro número é multiplicado
+*          pelos dígitos do segundo número, acumulando os resultados de forma apropriada.
+*          O sinal do resultado é determinado com base nos sinais dos números multiplicados.
+*
+* @return Big Number resultado da multiplicação.
+*/
+
 BigNumber multiply_big_numbers(BigNumber x, BigNumber y) {
     BigNumber result = create_big_number("");
 
@@ -311,16 +344,31 @@ BigNumber multiply_big_numbers(BigNumber x, BigNumber y) {
 
         result_extremity = result_extremity->prev_digit;
     }
-    
+
     remove_zeros_from_left(result);
     result->is_positive = result_sign;
 
     return(result);
 }
 
+
+/*
+* @brief Calcula a exponenciação rápida sem recursão.
+*
+* @param base Big Number base da exponenciação.
+* @param exponent Big Number expoente da exponenciação.
+*
+* @details A função realiza a exponenciação rápida (método iterativo). Verifica se o
+*          expoente é par ou ímpar e ajusta os valores de base e expoente iterativamente.
+*          Para expoentes pares, a base é elevada ao quadrado, enquanto para expoentes
+*          ímpares, o resultado parcial é multiplicado pela base atual.
+*
+* @return Big Number resultado da exponenciação.
+*/
+
 BigNumber fast_exponentiation_norecursion(BigNumber base, BigNumber exponent){
     BigNumber result = create_big_number("1");
-    
+
     while (!(exponent->first_digit->digit == 0 && exponent->first_digit == exponent->last_digit)){
         if (exponent->is_even){
 
@@ -334,7 +382,7 @@ BigNumber fast_exponentiation_norecursion(BigNumber base, BigNumber exponent){
 
         }
         else if (!exponent->is_even){
-            
+
             BigNumber one = create_big_number("1");
             result = multiply_big_numbers(result,base);
             exponent = subtraction_big_numbers(exponent,one);
@@ -346,19 +394,34 @@ BigNumber fast_exponentiation_norecursion(BigNumber base, BigNumber exponent){
             // free_big_number(exponent_minus_1);
             // free_big_number(partial_result);
 
-            
+
         }
     }
     return result;
 }
+
+
+/*
+* @brief Calcula a exponenciação rápida de forma recursiva.
+*
+* @param base Big Number base da exponenciação.
+* @param exponent Big Number expoente da exponenciação.
+*
+* @details A função realiza a exponenciação rápida de forma recursiva. Para expoentes
+*          pares, divide o expoente por dois e calcula o quadrado da potência parcial.
+*          Para expoentes ímpares, realiza a multiplicação da base pelo resultado de
+*          uma chamada recursiva com expoente decrementado em 1.
+*
+* @return Big Number resultado da exponenciação.
+*/
 
 BigNumber fast_exponentiation(BigNumber base, BigNumber exponent) {
     if (exponent->first_digit->digit == 0 && exponent->first_digit == exponent->last_digit) {
         BigNumber result = create_big_number("");
         add_node_to_big_number(result, 1, true);
         return result;
-    } 
-    
+    }
+
     else if (exponent->is_even){
         BigNumber two = create_big_number("2");
         BigNumber exponent_divided_by_2 = divide_big_numbers(exponent, two);
@@ -370,8 +433,8 @@ BigNumber fast_exponentiation(BigNumber base, BigNumber exponent) {
         free_big_number(half_power);
 
         return result;
-    } 
-    
+    }
+
     else if (!exponent->is_even) {
         BigNumber one = create_big_number("1");
         BigNumber exponent_minus_1 = subtraction_big_numbers(exponent, one);
@@ -388,6 +451,20 @@ BigNumber fast_exponentiation(BigNumber base, BigNumber exponent) {
     return NULL;
 }
 
+
+/*
+* @brief Calcula o resto da divisão entre dois Big Numbers.
+*
+* @param dividend Big Number dividendo.
+* @param divisor Big Number divisor.
+*
+* @details A função calcula o resto da divisão utilizando a fórmula: resto = dividendo -
+*          (quociente * divisor). O sinal do resultado é ajustado com base no divisor e
+*          no dividendo, garantindo a consistência matemática.
+*
+* @return Big Number resto da divisão.
+*/
+
 BigNumber remainder_of_division(BigNumber dividend, BigNumber divisor) {
     bool divisor_sign = divisor->is_positive;
     bool dividend_sign = dividend->is_positive;
@@ -400,7 +477,7 @@ BigNumber remainder_of_division(BigNumber dividend, BigNumber divisor) {
     dividend->is_positive = dividend_sign;
     BigNumber remainder = subtraction_big_numbers(dividend, quocient_times_divisor);
 
-    if ((remainder->is_positive == false && divisor->is_positive == true) || 
+    if ((remainder->is_positive == false && divisor->is_positive == true) ||
         (remainder->is_positive == true && divisor->is_positive == false)) {
         BigNumber update_remainder = sum_big_numbers(remainder, divisor);
 
@@ -414,6 +491,20 @@ BigNumber remainder_of_division(BigNumber dividend, BigNumber divisor) {
     return remainder;
 }
 
+
+/*
+* @brief Divide um Big Number por uma potência de 10.
+*
+* @param x Big Number a ser dividido.
+* @param power Potência de 10.
+*
+* @details A função realiza a divisão de um Big Number por uma potência de 10,
+*          removendo os últimos "power" dígitos. Caso a potência seja maior ou igual
+*          ao número de dígitos, o resultado é zero.
+*
+* @return Big Number resultado da divisão.
+*/
+
 BigNumber divide_by_power_of_ten(BigNumber x, int power) {
     BigNumber result = create_big_number("");
 
@@ -423,11 +514,24 @@ BigNumber divide_by_power_of_ten(BigNumber x, int power) {
     }
 
     copy_big_number(result,x,x->num_digits - power,false);
-    
+
     result->num_digits = x->num_digits - power;
 
     return result;
 }
+
+
+/*
+* @brief Obtém o resto de um Big Number por uma potência de 10.
+*
+* @param x Big Number a ser analisado.
+* @param power Potência de 10.
+*
+* @details A função retorna os últimos "power" dígitos de um Big Number como resultado,
+*          representando o resto da divisão por uma potência de 10.
+*
+* @return Big Number resto da divisão.
+*/
 
 BigNumber get_remainder_by_power_of_ten(BigNumber x, int power) {
     BigNumber result = create_big_number("");
@@ -445,12 +549,27 @@ BigNumber get_remainder_by_power_of_ten(BigNumber x, int power) {
     return result;
 }
 
+
+/*
+* @brief Multiplica dois Big Numbers utilizando o algoritmo de Karatsuba.
+*
+* @param x Big Number a ser multiplicado.
+* @param y Big Number a ser multiplicado.
+*
+* @details Implementa o algoritmo de Karatsuba para multiplicação eficiente de números.
+*          Divide os números em partes, realiza multiplicações menores e combina os
+*          resultados de forma eficiente. O algoritmo é mais rápido que o método
+*          tradicional para números grandes.
+*
+* @return Big Number resultado da multiplicação.
+*/
+
 BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
-    BigNumber result = create_big_number(""); 
+    BigNumber result = create_big_number("");
     bool result_sign = true ? x->is_positive == y->is_positive : false;
     x->is_positive = true;
     y->is_positive = true;
-    
+
     if (x->num_digits <=  3 && y->num_digits <=  3){
         result = multiply_big_numbers(x,y);
     }
@@ -470,7 +589,7 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         BigNumber c = multiply_karatsuba_big_numbers(sum_x_parts, sum_y_parts);
         BigNumber d = subtraction_big_numbers(c, a);
         d = subtraction_big_numbers(d, b);
-    
+
         int count = 0;
         while (count < half * 2){
             add_node_to_big_number(a,0,true);
@@ -479,7 +598,7 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
             }
             count++;
         }
-        
+
         result = a;
         result = sum_big_numbers(result,d);
         result = sum_big_numbers(result,b);
@@ -500,7 +619,7 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
     result->is_positive = result_sign;
     return result;
 
-    // a = x_left*y_left 
+    // a = x_left*y_left
     // b = y_rigth*x_right
     // d = (x_right*y_left +y_left*x_right)
     // c = (x_left + x_rigth) * (y_left + y_right)
@@ -509,6 +628,3 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
 
 
 }
-
-
-
