@@ -422,14 +422,7 @@ BigNumber divide_by_power_of_ten(BigNumber x, int power) {
         return result;
     }
 
-    Node current = x->first_digit;
-    int count = 0;
-
-    while (count < x->num_digits - power) {
-        add_node_to_big_number(result, current->digit, true);
-        current = current->next_digit;
-        count++;
-    }
+    copy_big_number(result,x,x->num_digits - power,false);
     
     result->num_digits = x->num_digits - power;
 
@@ -444,18 +437,7 @@ BigNumber get_remainder_by_power_of_ten(BigNumber x, int power) {
         return result;
     }
 
-    Node current = x->first_digit;
-    int count = 0;
-
-    while (count < x->num_digits - power) {
-        current = current->next_digit;
-        count++;
-    }
-
-    while (current != NULL) {
-        add_node_to_big_number(result, current->digit, true);
-        current = current->next_digit;
-    }
+    copy_big_number(result,x,power,true);
 
     result->is_positive = x->is_positive;
     result->num_digits = power;
@@ -463,173 +445,58 @@ BigNumber get_remainder_by_power_of_ten(BigNumber x, int power) {
     return result;
 }
 
-
 BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
     BigNumber result = create_big_number(""); 
     bool result_sign = true ? x->is_positive == y->is_positive : false;
+    x->is_positive = true;
+    y->is_positive = true;
     
-   // printf("numero de digitos :%d||| %d\n", x->num_digits,y->num_digits);
-
-    //caso base para quando o big number tiver apenas um digito
     if (x->num_digits <=  3 && y->num_digits <=  3){
-        x->is_positive = true;
-        y->is_positive = true;
         result = multiply_big_numbers(x,y);
-        // printf("mostrando o resultado: \n");
-        // print_big_number(result);
-        // printf("\n");
     }
     else{
-        x->is_positive = true;
-        y->is_positive = true;
         int tam = (x->num_digits>y->num_digits)?x->num_digits:y->num_digits;
-        int half = ceil((double) tam / 2);
-        //int half_left = tam - half;
-        //printf("half : %d",half);
-        // printf("tamanho : %d\n",tam);
-        // printf("tamanho metade : %d\n",half);
-        //BigNumber base_ten = create_big_number("10");
-        //print_big_number(base_ten);
-        //char* num_digits_str = create_big_number_str(half);
-        //BigNumber exponent = create_big_number(num_digits_str);
-        // printf("Numero de digitos : %d\n", x->num_digits/2);
+        int half = ceil(tam / 2.0);
 
-        BigNumber x_left = create_big_number("");
-        BigNumber x_right = create_big_number("");
-        BigNumber y_left = create_big_number("");
-        BigNumber y_right = create_big_number("");
+        BigNumber x_left = divide_by_power_of_ten(x, half);
+        BigNumber x_right = get_remainder_by_power_of_ten(x, half);
+        BigNumber y_left = divide_by_power_of_ten(y, half);
+        BigNumber y_right = get_remainder_by_power_of_ten(y, half);
 
-        BigNumber a = create_big_number("");
-        BigNumber b = create_big_number("");
-        BigNumber c = create_big_number("");
-        BigNumber d = create_big_number("");
-
-       
-        x_left = divide_by_power_of_ten(x,half);
-        x_right = get_remainder_by_power_of_ten(x, half);
-        y_left = divide_by_power_of_ten(y, half);
-        y_right = get_remainder_by_power_of_ten(y, half);
-        // x_left = divide_big_numbers(x, base_ten);
-        // x_right = remainder_of_division(x, base_ten);
-
-        // y_left = divide_big_numbers(y, base_ten);
-        // y_right = remainder_of_division(y, base_ten);
-
-        // copy_big_number(x_left,x,half_left,false);
-        // copy_big_number(x_right,x,half,true);
-        // copy_big_number(y_left,y,half_left,false);
-        // copy_big_number(y_right,y,half,true);
-        // int count = 1;
-        // while (count < half){
-        //     add_node_to_big_number(base_ten,0,true);
-        //     count++;
-        // }
-        // //print_big_number(base_ten);
-        // x_left = divide_big_numbers(x,base_ten);
-        // x_right = remainder_of_division(x,base_ten);
-        // //copy_big_number(y_left,y,tam,false);
-        // y_left = divide_big_numbers(y,base_ten);
-        // y_right= remainder_of_division(y,base_ten);
-        // // printf("veio auqizn\n");
-
-        // printf("*************************\n");
-        // print_big_number(x_left);
-        // //printf("Numero de digitos : %d\n",x_left->num_digits);
-        // print_big_number(x_right);
-        // //printf("Numero de digitos : %d\n",x_right->num_digits);
-        // print_big_number(y_left);
-        // //printf("Numero de digitos : %d\n",y_left->num_digits);
-        // print_big_number(y_right);
-        // //printf("Numero de digitos : %d\n",y_right->num_digits);
-        // printf("*************************\n");
-
-        a = multiply_karatsuba_big_numbers(x_left,y_left);
-        b = multiply_karatsuba_big_numbers(x_right,y_right);
-        c = multiply_karatsuba_big_numbers(sum_big_numbers(x_right,x_left),sum_big_numbers(y_right,y_left));
-        d = subtraction_big_numbers(c,a);
-        d = subtraction_big_numbers(d,b);
-
-        // printf("imprimindo a : ");
-        // print_big_number(a);
-        // printf("\n");
-
-        // printf("imprimindo b : ");
-        // print_big_number(b);
-        // printf("\n");
-
-        // printf("imprimindo c : ");
-        // print_big_number(c);
-        // printf("\n");
-
-        // printf("imprimindo d : ");
-        // print_big_number(d);
-        // printf("\n");
-
-
+        BigNumber a = multiply_karatsuba_big_numbers(x_left, y_left);
+        BigNumber b = multiply_karatsuba_big_numbers(x_right, y_right);
+        BigNumber sum_x_parts = sum_big_numbers(x_left, x_right);
+        BigNumber sum_y_parts = sum_big_numbers(y_left, y_right);
+        BigNumber c = multiply_karatsuba_big_numbers(sum_x_parts, sum_y_parts);
+        BigNumber d = subtraction_big_numbers(c, a);
+        d = subtraction_big_numbers(d, b);
+    
         int count = 0;
         while (count < half * 2){
             add_node_to_big_number(a,0,true);
-            if ( count < half){
+            if (count < half){
                 add_node_to_big_number(d,0,true);
             }
             count++;
         }
         
-        // count = 0;
-        // while (count < half){
-        //     add_node_to_big_number(d,0,true);
-        //     count++;
-        // }
-        
-        result = d;
-
-
-
-
-        // free(num_digits_str);
-        // free_big_number(exponent);
-        // num_digits_str = create_big_number_str(half*2);
-        // exponent = create_big_number(num_digits_str);
-
-        // while (count < half*2){
-        //     add_node_to_big_number(base_ten,0,true);
-        //     count++;
-        // }
-
-
-        result = sum_big_numbers(result,a);
-        // printf("Resultado primeira parte: ");
-        // print_big_number(result);
-        // printf("\n");
-        // printf("Resultado segunda parte: ");
-        // print_big_number(result);
-        // printf("\n");
+        result = a;
+        result = sum_big_numbers(result,d);
         result = sum_big_numbers(result,b);
-        // printf("Resultado terceira parte: ");
-        // print_big_number(result);
-        // printf("\n");
-        //print_big_number(exponent);
-        // base_ten = fast_exponentiation(base_ten,x->num_digits);
 
-        
-        // result = multiply_big_numbers(a,base_ten);
-        // free_big_number(base)
-        // result = sum
-        //add_node_to_big_number(result,0,true); 
         free_big_number(a);
         free_big_number(b);
         free_big_number(c);
         free_big_number(d);
-        //free_big_number(base_ten);
         free_big_number(x_left);
         free_big_number(x_right);
         free_big_number(y_left);
         free_big_number(y_right);
-        //free_big_number(exponent);
+        free_big_number(sum_x_parts);
+        free_big_number(sum_y_parts);
 
     }
 
-    //printf("-----------------------------------------------------------\n");
     result->is_positive = result_sign;
     return result;
 

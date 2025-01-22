@@ -324,15 +324,16 @@ char* create_big_number_str(int num_digits) {
     return num_digits_str;
 }
 
-void copy_big_number(BigNumber big_number_dest,BigNumber big_number_orig,int tam,bool in_left){
+void copy_big_number(BigNumber big_number_dest,BigNumber big_number_orig,int tam,bool by_end_of_orig){
 
 
-    if (!in_left){
+    if (!by_end_of_orig){
         Node node_to_cpy = big_number_orig->first_digit;
         for (int i = 0; i < tam ; i ++){
             add_node_to_big_number(big_number_dest,node_to_cpy->digit,true);
             node_to_cpy = node_to_cpy->next_digit;
         }
+        free(node_to_cpy);
     }
     else {
         Node node_to_cpy = big_number_orig->last_digit;
@@ -340,8 +341,8 @@ void copy_big_number(BigNumber big_number_dest,BigNumber big_number_orig,int tam
             add_node_to_big_number(big_number_dest,node_to_cpy->digit,false);
             node_to_cpy = node_to_cpy->prev_digit;
         }        
-
+        free(node_to_cpy);
     }
-    //printf("terminou aqui\n");
+    
 
 }
