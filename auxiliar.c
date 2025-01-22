@@ -72,17 +72,14 @@ void execute_program() {
             case '/':
                 result = divide_big_numbers(big_num1, big_num2);
                 break;
-            case ']':
+            case '*':
                 result = multiply_big_numbers(big_num1,big_num2);
                 break;
             case '^':
                 result = fast_exponentiation(big_num1, big_num2);
                 break;
-            case '*':
+            case 'k':
                 result = multiply_karatsuba_big_numbers(big_num1,big_num2);
-                break;
-            case ';':
-                result = fast_exponentiation_norecursion(big_num1,big_num2);
                 break;
             default:
                 printf("Operacao nao conhecida\n");
@@ -333,7 +330,7 @@ void copy_big_number(BigNumber big_number_dest,BigNumber big_number_orig,int tam
             add_node_to_big_number(big_number_dest,node_to_cpy->digit,true);
             node_to_cpy = node_to_cpy->next_digit;
         }
-        free(node_to_cpy);
+        
     }
     else {
         Node node_to_cpy = big_number_orig->last_digit;
@@ -341,7 +338,7 @@ void copy_big_number(BigNumber big_number_dest,BigNumber big_number_orig,int tam
             add_node_to_big_number(big_number_dest,node_to_cpy->digit,false);
             node_to_cpy = node_to_cpy->prev_digit;
         }        
-        free(node_to_cpy);
+        
     }
     
 

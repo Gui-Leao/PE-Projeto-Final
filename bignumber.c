@@ -351,70 +351,6 @@ BigNumber multiply_big_numbers(BigNumber x, BigNumber y) {
     return(result);
 }
 
-
-/*
-* @brief Calcula a exponenciação rápida sem recursão.
-*
-* @param base Big Number base da exponenciação.
-* @param exponent Big Number expoente da exponenciação.
-*
-* @details A função realiza a exponenciação rápida (método iterativo). Verifica se o
-*          expoente é par ou ímpar e ajusta os valores de base e expoente iterativamente.
-*          Para expoentes pares, a base é elevada ao quadrado, enquanto para expoentes
-*          ímpares, o resultado parcial é multiplicado pela base atual.
-*
-* @return Big Number resultado da exponenciação.
-*/
-
-BigNumber fast_exponentiation_norecursion(BigNumber base, BigNumber exponent){
-    BigNumber result = create_big_number("1");
-
-    while (!(exponent->first_digit->digit == 0 && exponent->first_digit == exponent->last_digit)){
-        if (exponent->is_even){
-
-            BigNumber two = create_big_number("2");
-            base = multiply_big_numbers(base,base);
-            exponent = divide_big_numbers(exponent, two);
-
-            free_big_number(two);
-            // free_big_number(exponent_divided_by_2);
-            // free_big_number(half_power);
-
-        }
-        else if (!exponent->is_even){
-
-            BigNumber one = create_big_number("1");
-            result = multiply_big_numbers(result,base);
-            exponent = subtraction_big_numbers(exponent,one);
-            // BigNumber exponent_minus_1 = subtraction_big_numbers(exponent, one);
-            // BigNumber partial_result = fast_exponentiation(base, exponent_minus_1);
-            // BigNumber result = multiply_big_numbers(base, partial_result);
-
-            free_big_number(one);
-            // free_big_number(exponent_minus_1);
-            // free_big_number(partial_result);
-
-
-        }
-    }
-    return result;
-}
-
-
-/*
-* @brief Calcula a exponenciação rápida de forma recursiva.
-*
-* @param base Big Number base da exponenciação.
-* @param exponent Big Number expoente da exponenciação.
-*
-* @details A função realiza a exponenciação rápida de forma recursiva. Para expoentes
-*          pares, divide o expoente por dois e calcula o quadrado da potência parcial.
-*          Para expoentes ímpares, realiza a multiplicação da base pelo resultado de
-*          uma chamada recursiva com expoente decrementado em 1.
-*
-* @return Big Number resultado da exponenciação.
-*/
-
 BigNumber fast_exponentiation(BigNumber base, BigNumber exponent) {
     if (exponent->first_digit->digit == 0 && exponent->first_digit == exponent->last_digit) {
         BigNumber result = create_big_number("");
@@ -565,7 +501,7 @@ BigNumber get_remainder_by_power_of_ten(BigNumber x, int power) {
 */
 
 BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
-    BigNumber result = create_big_number("");
+    BigNumber result; 
     bool result_sign = true ? x->is_positive == y->is_positive : false;
     x->is_positive = true;
     y->is_positive = true;
@@ -588,8 +524,11 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         BigNumber sum_y_parts = sum_big_numbers(y_left, y_right);
         BigNumber c = multiply_karatsuba_big_numbers(sum_x_parts, sum_y_parts);
         BigNumber d = subtraction_big_numbers(c, a);
-        d = subtraction_big_numbers(d, b);
+        BigNumber d_temp = subtraction_big_numbers(d, b); 
+        free_big_number(d);  
 
+        d = d_temp;
+    
         int count = 0;
         while (count < half * 2){
             add_node_to_big_number(a,0,true);
@@ -599,11 +538,13 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
             count++;
         }
 
-        result = a;
-        result = sum_big_numbers(result,d);
-        result = sum_big_numbers(result,b);
 
-        free_big_number(a);
+        result = a;
+        BigNumber result_aux = sum_big_numbers(result,d);
+        free_big_number(result);
+
+        result = sum_big_numbers(result_aux,b);
+
         free_big_number(b);
         free_big_number(c);
         free_big_number(d);
@@ -613,18 +554,18 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         free_big_number(y_right);
         free_big_number(sum_x_parts);
         free_big_number(sum_y_parts);
+        free_big_number(result_aux);
 
     }
 
+    
     result->is_positive = result_sign;
     return result;
 
-    // a = x_left*y_left
-    // b = y_rigth*x_right
-    // d = (x_right*y_left +y_left*x_right)
-    // c = (x_left + x_rigth) * (y_left + y_right)
-    // d = c - a - b
-    // a * 10^n + d * 10 ^(n/2) + b
+
 
 
 }
+
+
+
