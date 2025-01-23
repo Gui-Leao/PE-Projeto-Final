@@ -107,6 +107,28 @@ void execute_program() {
 
 
 /*
+* @brief Cria um Nó.
+*
+* @param digit Dígito do Nó.
+*
+* @details A função inicializa o Nó apenas com o dígito, sem nenhuma ligação com algum Nó
+*          posterior ou anterior.
+*
+* @return O Nó criado.
+*/
+
+Node create_node(int digit) {
+    Node new_node = (Node)malloc(sizeof(struct Node));
+
+    new_node->digit = digit;
+    new_node->next_digit = NULL;
+    new_node->prev_digit = NULL;
+
+    return new_node;
+}
+
+
+/*
 * @brief Adiciona um novo Nó em um Big Number.
 *
 * @param big_number Registro do tipo Big Number.
@@ -182,6 +204,69 @@ int compare_big_numbers_modules(BigNumber x, BigNumber y) {
     }
 
     return 0;
+}
+
+
+/*
+* @brief Copia os dígitos de um Big Number para outro.
+*
+* @param big_number_dest Big Number de destino.
+* @param big_number_orig Big Number de origem.
+* @param tam Quantidade de dígitos a serem copiados.
+* @param by_end_of_orig Se verdadeiro, começa a cópia do final; caso contrário, do início.
+*
+* @details Essa função transfere os dígitos de um Big Number para outro, começando pela
+*          frente ou pelo final do número original, dependendo do valor de `by_end_of_orig`.
+*          Durante o processo, o número de destino é preenchido com os dígitos na ordem correta,
+*          sem alterar o número original.
+*/
+
+void copy_big_number(BigNumber big_number_dest, BigNumber big_number_orig, int tam, bool by_end_of_orig) {
+    if (!by_end_of_orig) {
+        Node node_to_cpy = big_number_orig->first_digit;
+
+        for (int i = 0; i < tam ; i ++) {
+            add_node_to_big_number(big_number_dest, node_to_cpy->digit, true);
+            node_to_cpy = node_to_cpy->next_digit;
+        }
+    }
+
+    else {
+        Node node_to_cpy = big_number_orig->last_digit;
+
+        for (int i = 0; i < tam ; i ++) {
+            add_node_to_big_number(big_number_dest, node_to_cpy->digit, false);
+            node_to_cpy = node_to_cpy->prev_digit;
+        }
+    }
+}
+
+
+/*
+* @brief Remove zeros da esquerda que permanecem no resultado depois de alguma operação
+*        com os Big Numbers.
+*
+* @param big_number Big Number a ter os zeros removidos da esquerda.
+*
+* @details A função passa por por todos os dígitos da esquerda que são iguais a zero,
+*          removendo o Nó do Big Number e alterando qual será o novo primeiro Nó.
+*          Se o Big Number for exatamente igual a zero, nada é feito.
+*/
+
+void remove_zeros_from_left(BigNumber big_number) {
+    while (big_number->first_digit->digit == 0 && big_number->first_digit != big_number->last_digit) {
+        Node node_to_remove = big_number->first_digit;
+
+        big_number->first_digit = node_to_remove->next_digit;
+        big_number->first_digit->prev_digit = NULL;
+
+        free(node_to_remove);
+        big_number->num_digits--;
+    }
+
+    if (big_number->first_digit == big_number->last_digit && big_number->first_digit->digit == 0) {
+        big_number->is_positive = true;
+    }
 }
 
 
@@ -285,63 +370,58 @@ void determine_order_of_subtraction(BigNumber x, Node* node_x, BigNumber y, Node
 
 
 /*
-* @brief Remove zeros da esquerda que permanecem no resultado depois de alguma operação
-*        com os Big Numbers.
+* @brief Divide um Big Number por uma potência de 10.
 *
-* @param big_number Big Number a ter os zeros removidos da esquerda.
+* @param x Big Number a ser dividido.
+* @param power Potência de 10.
 *
-* @details A função passa por por todos os dígitos da esquerda que são iguais a zero,
-*          removendo o Nó do Big Number e alterando qual será o novo primeiro Nó.
-*          Se o Big Number for exatamente igual a zero, nada é feito.
+* @details A função realiza a divisão de um Big Number por uma potência de 10,
+*          removendo os últimos "power" dígitos. Caso a potência seja maior ou igual
+*          ao número de dígitos, o resultado é zero.
+*
+* @return Big Number resultado da divisão.
 */
 
-void remove_zeros_from_left(BigNumber big_number) {
-    while (big_number->first_digit->digit == 0 && big_number->first_digit != big_number->last_digit) {
-        Node node_to_remove = big_number->first_digit;
+BigNumber divide_by_power_of_ten(BigNumber x, int power) {
+    BigNumber result = create_big_number("");
 
-        big_number->first_digit = node_to_remove->next_digit;
-        big_number->first_digit->prev_digit = NULL;
-
-        free(node_to_remove);
-        big_number->num_digits--;
+    if (power >= x->num_digits) {
+        add_node_to_big_number(result, 0, true);
+        return result;
     }
 
-    if (big_number->first_digit == big_number->last_digit && big_number->first_digit->digit == 0) {
-        big_number->is_positive = true;
-    }
+    copy_big_number(result, x, x->num_digits - power, false);
+
+    result->num_digits = x->num_digits - power;
+
+    return result;
 }
 
 
 /*
-* @brief Copia os dígitos de um Big Number para outro.
+* @brief Obtém o resto de um Big Number por uma potência de 10.
 *
-* @param big_number_dest Big Number de destino.
-* @param big_number_orig Big Number de origem.
-* @param tam Quantidade de dígitos a serem copiados.
-* @param by_end_of_orig Se verdadeiro, começa a cópia do final; caso contrário, do início.
+* @param x Big Number a ser analisado.
+* @param power Potência de 10.
 *
-* @details Essa função transfere os dígitos de um Big Number para outro, começando pela
-*          frente ou pelo final do número original, dependendo do valor de `by_end_of_orig`.
-*          Durante o processo, o número de destino é preenchido com os dígitos na ordem correta,
-*          sem alterar o número original.
+* @details A função retorna os últimos "power" dígitos de um Big Number como resultado,
+*          representando o resto da divisão por uma potência de 10.
+*
+* @return Big Number resto da divisão.
 */
 
-void copy_big_number(BigNumber big_number_dest, BigNumber big_number_orig, int tam, bool by_end_of_orig) {
-    if (!by_end_of_orig) {
-        Node node_to_cpy = big_number_orig->first_digit;
+BigNumber get_remainder_by_power_of_ten(BigNumber x, int power) {
+    BigNumber result = create_big_number("");
 
-        for (int i = 0; i < tam ; i ++) {
-            add_node_to_big_number(big_number_dest, node_to_cpy->digit, true);
-            node_to_cpy = node_to_cpy->next_digit;
-        }
+    if (power >= x->num_digits) {
+        copy_big_number(result, x, x->num_digits, false);
+        return result;
     }
 
-    else {
-        Node node_to_cpy = big_number_orig->last_digit;
+    copy_big_number(result, x, power, true);
 
-        for (int i = 0; i < tam ; i ++) {
-            add_node_to_big_number(big_number_dest, node_to_cpy->digit, false);
-            node_to_cpy = node_to_cpy->prev_digit;
-        }
-    }
+    result->is_positive = x->is_positive;
+    result->num_digits = power;
+
+    return result;
 }

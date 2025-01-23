@@ -6,28 +6,6 @@
 
 
 /*
-* @brief Cria um Nó.
-*
-* @param digit Dígito do Nó.
-*
-* @details A função inicializa o Nó apenas com o dígito, sem nenhuma ligação com algum Nó
-*          posterior ou anterior.
-*
-* @return O Nó criado.
-*/
-
-Node create_node(int digit) {
-    Node new_node = (Node)malloc(sizeof(struct Node));
-
-    new_node->digit = digit;
-    new_node->next_digit = NULL;
-    new_node->prev_digit = NULL;
-
-    return new_node;
-}
-
-
-/*
 * @brief Cria um Big Number.
 *
 * @param str_number String do número.
@@ -62,45 +40,6 @@ BigNumber create_big_number(char *str_number) {
     }
 
     return big_number;
-}
-
-
-/*
-* @brief Realiza o print de um Big Number.
-*
-* @param big_number Big Number a ser printado.
-*/
-
-void print_big_number(BigNumber big_number) {
-    if ((big_number->is_positive == false)) printf("-");
-
-    Node current_node = big_number->first_digit;
-
-    while (current_node != NULL) {
-        printf("%d", current_node->digit);
-        current_node = current_node->next_digit;
-    }
-
-    printf("\n");
-}
-
-
-/*
-* @brief Libera a memória alocada pelo Big Number.
-*
-* @param big_number Big Number a ser liberado da memória.
-*/
-
-void free_big_number(BigNumber big_number) {
-    Node current_node = big_number->first_digit;
-
-    while (current_node != NULL) {
-        Node next_node = current_node->next_digit;
-        free(current_node);
-        current_node = next_node;
-    }
-
-    free(big_number);
 }
 
 
@@ -451,64 +390,6 @@ BigNumber remainder_of_division(BigNumber dividend, BigNumber divisor) {
 
 
 /*
-* @brief Divide um Big Number por uma potência de 10.
-*
-* @param x Big Number a ser dividido.
-* @param power Potência de 10.
-*
-* @details A função realiza a divisão de um Big Number por uma potência de 10,
-*          removendo os últimos "power" dígitos. Caso a potência seja maior ou igual
-*          ao número de dígitos, o resultado é zero.
-*
-* @return Big Number resultado da divisão.
-*/
-
-BigNumber divide_by_power_of_ten(BigNumber x, int power) {
-    BigNumber result = create_big_number("");
-
-    if (power >= x->num_digits) {
-        add_node_to_big_number(result, 0, true);
-        return result;
-    }
-
-    copy_big_number(result, x, x->num_digits - power, false);
-
-    result->num_digits = x->num_digits - power;
-
-    return result;
-}
-
-
-/*
-* @brief Obtém o resto de um Big Number por uma potência de 10.
-*
-* @param x Big Number a ser analisado.
-* @param power Potência de 10.
-*
-* @details A função retorna os últimos "power" dígitos de um Big Number como resultado,
-*          representando o resto da divisão por uma potência de 10.
-*
-* @return Big Number resto da divisão.
-*/
-
-BigNumber get_remainder_by_power_of_ten(BigNumber x, int power) {
-    BigNumber result = create_big_number("");
-
-    if (power >= x->num_digits) {
-        copy_big_number(result, x, x->num_digits, false);
-        return result;
-    }
-
-    copy_big_number(result, x, power, true);
-
-    result->is_positive = x->is_positive;
-    result->num_digits = power;
-
-    return result;
-}
-
-
-/*
 * @brief Multiplica dois Big Numbers utilizando o algoritmo de Karatsuba.
 *
 * @param x Big Number a ser multiplicado.
@@ -590,4 +471,43 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y) {
 
     result->is_positive = result_sign;
     return result;
+}
+
+
+/*
+* @brief Realiza o print de um Big Number.
+*
+* @param big_number Big Number a ser printado.
+*/
+
+void print_big_number(BigNumber big_number) {
+    if ((big_number->is_positive == false)) printf("-");
+
+    Node current_node = big_number->first_digit;
+
+    while (current_node != NULL) {
+        printf("%d", current_node->digit);
+        current_node = current_node->next_digit;
+    }
+
+    printf("\n");
+}
+
+
+/*
+* @brief Libera a memória alocada pelo Big Number.
+*
+* @param big_number Big Number a ser liberado da memória.
+*/
+
+void free_big_number(BigNumber big_number) {
+    Node current_node = big_number->first_digit;
+
+    while (current_node != NULL) {
+        Node next_node = current_node->next_digit;
+        free(current_node);
+        current_node = next_node;
+    }
+
+    free(big_number);
 }
