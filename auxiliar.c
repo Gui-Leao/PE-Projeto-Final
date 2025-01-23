@@ -302,24 +302,6 @@ void remove_zeros_from_left(BigNumber big_number) {
     }
 }
 
-char* create_big_number_str(int num_digits) {
-    // Calcula o número de dígitos necessários
-    int length = snprintf(NULL, 0, "%d", num_digits);
-    
-    // Aloca memória dinamicamente para a string
-    char* num_digits_str = (char*)malloc((length + 1) * sizeof(char));
-    
-    if (num_digits_str == NULL) {
-        // Lida com erro de alocação de memória
-        perror("Erro ao alocar memória");
-        exit(1);
-    }
-
-    // Preenche a string com o valor de num_digits
-    snprintf(num_digits_str, length + 1, "%d", num_digits);
-
-    return num_digits_str;
-}
 
 void copy_big_number(BigNumber big_number_dest,BigNumber big_number_orig,int tam,bool by_end_of_orig){
 
