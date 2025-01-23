@@ -351,6 +351,24 @@ BigNumber multiply_big_numbers(BigNumber x, BigNumber y) {
     return(result);
 }
 
+
+/*
+* @brief Calcula a exponenciação rápida de um Big Number.
+*
+* @param base Big Number que será elevado à potência.
+* @param exponent Big Number que será usado como expoente.
+*
+* @details A função implementa o algoritmo de exponenciação rápida para calcular 
+*          potências de maneira eficiente. Se o expoente for zero, o resultado é 1. 
+*          Caso o expoente seja par, ele é dividido por 2, e a base é multiplicada
+*          por si mesma. Se o expoente for ímpar, o resultado é obtido multiplicando-se 
+*          a base pelo resultado da exponenciação com o expoente reduzido em 1.
+*          O algoritmo utiliza recursão para realizar os cálculos e libera a memória 
+*          alocada dinamicamente para Big Numbers intermediários.
+*
+* @return Big Number resultado da exponenciação.
+*/
+
 BigNumber fast_exponentiation(BigNumber base, BigNumber exponent) {
     if (exponent->first_digit->digit == 0 && exponent->first_digit == exponent->last_digit) {
         BigNumber result = create_big_number("");

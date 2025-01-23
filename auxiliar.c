@@ -11,6 +11,8 @@
 * @details A função aloca dinamicamente na memória a string que está sendo fornecida
 *          na entrada através do getchar(), identificando se é o fim do arquivo ou
 *          o fim da linha.
+*
+* @return char* Ponteiro para a string alocada dinamicamente contendo a entrada lida.
 */
 
 char* read_input() {
@@ -302,6 +304,20 @@ void remove_zeros_from_left(BigNumber big_number) {
     }
 }
 
+
+/* 
+* @brief Copia os dígitos de um Big Number para outro.
+*
+* @param big_number_dest Big Number de destino.
+* @param big_number_orig Big Number de origem.
+* @param tam Quantidade de dígitos a serem copiados.
+* @param by_end_of_orig Se verdadeiro, começa a cópia do final; caso contrário, do início.
+*
+* @details Essa função transfere os dígitos de um Big Number para outro, começando pela 
+*          frente ou pelo final do número original, dependendo do valor de `by_end_of_orig`. 
+*          Durante o processo, o número de destino é preenchido com os dígitos na ordem correta, 
+*          sem alterar o número original.
+*/
 
 void copy_big_number(BigNumber big_number_dest,BigNumber big_number_orig,int tam,bool by_end_of_orig){
 
