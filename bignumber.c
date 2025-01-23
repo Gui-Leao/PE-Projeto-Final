@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "auxiliar.h"
 #include "bignumber.h"
-#include <math.h>
 
 
 /*
@@ -61,7 +61,6 @@ BigNumber create_big_number(char *str_number) {
         i++;
     }
 
-
     return big_number;
 }
 
@@ -81,9 +80,8 @@ void print_big_number(BigNumber big_number) {
         printf("%d", current_node->digit);
         current_node = current_node->next_digit;
     }
-    //is_even(big_number);
+
     printf("\n");
-    //big_number->is_even?printf("é par\n"):printf("é impar\n");
 }
 
 
@@ -124,7 +122,6 @@ void free_big_number(BigNumber big_number) {
 BigNumber sum_big_numbers(BigNumber x, BigNumber y) {
     BigNumber result = create_big_number("");
 
-
     if (x->is_positive != y->is_positive) {
         int comparison_big_numbers_modules = compare_big_numbers_modules(x, y);
 
@@ -145,7 +142,9 @@ BigNumber sum_big_numbers(BigNumber x, BigNumber y) {
     else {
         if (x->is_positive == false && y->is_positive == false) {
             result->is_positive = false;
-        } else {
+        }
+
+        else {
             result->is_positive = true;
         }
 
@@ -163,12 +162,14 @@ BigNumber sum_big_numbers(BigNumber x, BigNumber y) {
             sum = digit_x + digit_y + carry_digit;
             carry_digit = sum / 10;
             new_result_digit = sum % 10;
+
             add_node_to_big_number(result, new_result_digit, false);
 
             if (node_x != NULL) node_x = node_x->prev_digit;
             if (node_y != NULL) node_y = node_y->prev_digit;
         }
     }
+
     result->is_even = (result->last_digit->digit % 2 == 0) ? true : false;
     remove_zeros_from_left(result);
 
@@ -199,7 +200,7 @@ BigNumber sum_big_numbers(BigNumber x, BigNumber y) {
 * @return BigNumber result Resultado da operação.
 */
 
-BigNumber subtraction_big_numbers(BigNumber x, BigNumber y) {
+BigNumber subtract_big_numbers(BigNumber x, BigNumber y) {
     BigNumber result = create_big_number("");
 
     if (x->is_positive != y->is_positive) {
@@ -226,7 +227,9 @@ BigNumber subtraction_big_numbers(BigNumber x, BigNumber y) {
             if (subtraction < 0) {
                 subtraction += 10;
                 borrow_digit = 1;
-            } else {
+            }
+
+            else {
                 borrow_digit = 0;
             }
 
@@ -282,8 +285,9 @@ BigNumber divide_big_numbers(BigNumber dividend, BigNumber divisor) {
         }
 
         int count = 0;
+
         while (compare_big_numbers_modules(current_dividend, divisor) >= 0) {
-            BigNumber update_current = subtraction_big_numbers(current_dividend, divisor);
+            BigNumber update_current = subtract_big_numbers(current_dividend, divisor);
 
             free_big_number(current_dividend);
             current_dividend = update_current;
@@ -358,12 +362,12 @@ BigNumber multiply_big_numbers(BigNumber x, BigNumber y) {
 * @param base Big Number que será elevado à potência.
 * @param exponent Big Number que será usado como expoente.
 *
-* @details A função implementa o algoritmo de exponenciação rápida para calcular 
-*          potências de maneira eficiente. Se o expoente for zero, o resultado é 1. 
+* @details A função implementa o algoritmo de exponenciação rápida para calcular
+*          potências de maneira eficiente. Se o expoente for zero, o resultado é 1.
 *          Caso o expoente seja par, ele é dividido por 2, e a base é multiplicada
-*          por si mesma. Se o expoente for ímpar, o resultado é obtido multiplicando-se 
+*          por si mesma. Se o expoente for ímpar, o resultado é obtido multiplicando-se
 *          a base pelo resultado da exponenciação com o expoente reduzido em 1.
-*          O algoritmo utiliza recursão para realizar os cálculos e libera a memória 
+*          O algoritmo utiliza recursão para realizar os cálculos e libera a memória
 *          alocada dinamicamente para Big Numbers intermediários.
 *
 * @return Big Number resultado da exponenciação.
@@ -391,7 +395,7 @@ BigNumber fast_exponentiation(BigNumber base, BigNumber exponent) {
 
     else if (!exponent->is_even) {
         BigNumber one = create_big_number("1");
-        BigNumber exponent_minus_1 = subtraction_big_numbers(exponent, one);
+        BigNumber exponent_minus_1 = subtract_big_numbers(exponent, one);
         BigNumber partial_result = fast_exponentiation(base, exponent_minus_1);
         BigNumber result = multiply_big_numbers(base, partial_result);
 
@@ -429,7 +433,7 @@ BigNumber remainder_of_division(BigNumber dividend, BigNumber divisor) {
     BigNumber quocient_times_divisor = multiply_big_numbers(quocient, divisor);
 
     dividend->is_positive = dividend_sign;
-    BigNumber remainder = subtraction_big_numbers(dividend, quocient_times_divisor);
+    BigNumber remainder = subtract_big_numbers(dividend, quocient_times_divisor);
 
     if ((remainder->is_positive == false && divisor->is_positive == true) ||
         (remainder->is_positive == true && divisor->is_positive == false)) {
@@ -519,43 +523,52 @@ BigNumber get_remainder_by_power_of_ten(BigNumber x, int power) {
 */
 
 BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
-    BigNumber result; 
+    BigNumber result;
+
     bool result_sign = true ? x->is_positive == y->is_positive : false;
+
     x->is_positive = true;
     y->is_positive = true;
 
     if (x->num_digits <=  3 && y->num_digits <=  3){
         result = multiply_big_numbers(x,y);
     }
-    else{
+
+    else {
         int tam = (x->num_digits>y->num_digits)?x->num_digits:y->num_digits;
         int half = ceil(tam / 2.0);
 
         BigNumber x_left = divide_by_power_of_ten(x, half);
         BigNumber x_right = get_remainder_by_power_of_ten(x, half);
+
         BigNumber y_left = divide_by_power_of_ten(y, half);
         BigNumber y_right = get_remainder_by_power_of_ten(y, half);
 
         BigNumber a = multiply_karatsuba_big_numbers(x_left, y_left);
         BigNumber b = multiply_karatsuba_big_numbers(x_right, y_right);
+
         BigNumber sum_x_parts = sum_big_numbers(x_left, x_right);
         BigNumber sum_y_parts = sum_big_numbers(y_left, y_right);
+
         BigNumber c = multiply_karatsuba_big_numbers(sum_x_parts, sum_y_parts);
-        BigNumber d = subtraction_big_numbers(c, a);
-        BigNumber d_temp = subtraction_big_numbers(d, b); 
-        free_big_number(d);  
+        BigNumber d = subtract_big_numbers(c, a);
+        BigNumber d_temp = subtract_big_numbers(d, b);
+
+        free_big_number(d);
 
         d = d_temp;
-    
+
         int count = 0;
+
         while (count < half * 2){
             add_node_to_big_number(a,0,true);
+
             if (count < half){
                 add_node_to_big_number(d,0,true);
             }
+
             count++;
         }
-
 
         result = a;
         BigNumber result_aux = sum_big_numbers(result,d);
@@ -573,17 +586,8 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         free_big_number(sum_x_parts);
         free_big_number(sum_y_parts);
         free_big_number(result_aux);
-
     }
 
-    
     result->is_positive = result_sign;
     return result;
-
-
-
-
 }
-
-
-

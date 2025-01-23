@@ -7,7 +7,6 @@ char* read_input();
 void execute_program();
 
 void add_node_to_big_number(BigNumber big_number, int digit, bool insert_at_end);
-
 int compare_big_numbers_modules(BigNumber x, BigNumber y);
 
 BigNumber switch_to_sum_or_subtraction(char *switch_to, bool sign, BigNumber x, BigNumber y, BigNumber result);
