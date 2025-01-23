@@ -77,7 +77,7 @@ void execute_program() {
                 result = divide_big_numbers(big_num1, big_num2);
                 break;
             case '*':
-                result = multiply_karatsuba_big_numbers(big_num1,big_num2);
+                result = multiply_karatsuba_big_numbers(big_num1, big_num2);
                 break;
             case '%':
                 result = remainder_of_division(big_num1, big_num2);
@@ -86,17 +86,12 @@ void execute_program() {
                 result = fast_exponentiation(big_num1, big_num2);
                 break;
             case 'x':
-                result = multiply_big_numbers(big_num1,big_num2);
+                result = multiply_big_numbers(big_num1, big_num2);
                 break;
             default:
-                printf("Operacao nao conhecida\n");
+                printf("Operação não conhecida");
                 result = create_big_number("");
                 break;
-        }
-
-        if (result == NULL) {
-            perror("Erro ao alocar memória");
-            exit(1);
         }
 
         print_big_number(result);
@@ -331,12 +326,12 @@ void remove_zeros_from_left(BigNumber big_number) {
 *          sem alterar o número original.
 */
 
-void copy_big_number(BigNumber big_number_dest,BigNumber big_number_orig,int tam,bool by_end_of_orig){
-    if (!by_end_of_orig){
+void copy_big_number(BigNumber big_number_dest, BigNumber big_number_orig, int tam, bool by_end_of_orig) {
+    if (!by_end_of_orig) {
         Node node_to_cpy = big_number_orig->first_digit;
 
-        for (int i = 0; i < tam ; i ++){
-            add_node_to_big_number(big_number_dest,node_to_cpy->digit,true);
+        for (int i = 0; i < tam ; i ++) {
+            add_node_to_big_number(big_number_dest, node_to_cpy->digit, true);
             node_to_cpy = node_to_cpy->next_digit;
         }
     }
@@ -344,8 +339,8 @@ void copy_big_number(BigNumber big_number_dest,BigNumber big_number_orig,int tam
     else {
         Node node_to_cpy = big_number_orig->last_digit;
 
-        for (int i = 0; i < tam ; i ++){
-            add_node_to_big_number(big_number_dest,node_to_cpy->digit,false);
+        for (int i = 0; i < tam ; i ++) {
+            add_node_to_big_number(big_number_dest, node_to_cpy->digit, false);
             node_to_cpy = node_to_cpy->prev_digit;
         }
     }

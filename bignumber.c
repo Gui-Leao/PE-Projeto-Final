@@ -471,7 +471,7 @@ BigNumber divide_by_power_of_ten(BigNumber x, int power) {
         return result;
     }
 
-    copy_big_number(result,x,x->num_digits - power,false);
+    copy_big_number(result, x, x->num_digits - power, false);
 
     result->num_digits = x->num_digits - power;
 
@@ -499,7 +499,7 @@ BigNumber get_remainder_by_power_of_ten(BigNumber x, int power) {
         return result;
     }
 
-    copy_big_number(result,x,power,true);
+    copy_big_number(result, x, power, true);
 
     result->is_positive = x->is_positive;
     result->num_digits = power;
@@ -522,7 +522,7 @@ BigNumber get_remainder_by_power_of_ten(BigNumber x, int power) {
 * @return Big Number resultado da multiplicação.
 */
 
-BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
+BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y) {
     BigNumber result;
 
     bool result_sign = true ? x->is_positive == y->is_positive : false;
@@ -530,12 +530,12 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
     x->is_positive = true;
     y->is_positive = true;
 
-    if (x->num_digits <=  3 && y->num_digits <=  3){
-        result = multiply_big_numbers(x,y);
+    if (x->num_digits <= 3 && y->num_digits <= 3) {
+        result = multiply_big_numbers(x, y);
     }
 
     else {
-        int tam = (x->num_digits>y->num_digits)?x->num_digits:y->num_digits;
+        int tam = (x->num_digits > y->num_digits) ? x->num_digits : y->num_digits;
         int half = ceil(tam / 2.0);
 
         BigNumber x_left = divide_by_power_of_ten(x, half);
@@ -561,20 +561,20 @@ BigNumber multiply_karatsuba_big_numbers(BigNumber x, BigNumber y){
         int count = 0;
 
         while (count < half * 2){
-            add_node_to_big_number(a,0,true);
+            add_node_to_big_number(a, 0, true);
 
             if (count < half){
-                add_node_to_big_number(d,0,true);
+                add_node_to_big_number(d, 0, true);
             }
 
             count++;
         }
 
         result = a;
-        BigNumber result_aux = sum_big_numbers(result,d);
+        BigNumber result_aux = sum_big_numbers(result, d);
         free_big_number(result);
 
-        result = sum_big_numbers(result_aux,b);
+        result = sum_big_numbers(result_aux, b);
 
         free_big_number(b);
         free_big_number(c);
